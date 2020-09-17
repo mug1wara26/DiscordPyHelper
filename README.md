@@ -3,8 +3,8 @@ JavaFX application that helps guide you to create a discord.py bot using RichTex
 
 # Features
 **NOTE: This is a list of features that WILL be in the final version of this project**
-* Add commands, decorators and error handlers withe the click of a button
-* Create disocrd.py project with main.py, .env set up
+* Add commands, decorators and error handlers with the the click of a button
+* Create discord.py project with main.py, .env set up
 * Stores bot token in .env
 * Sets up the discord.py bot, user only needs to write code for the bot commands itself
 * Handles async so beginners do not have to
@@ -21,6 +21,7 @@ JavaFX application that helps guide you to create a discord.py bot using RichTex
 * Autosave
 * Light Mode
 * Support for other languages
+* Git intergration
 
 # Dependencies
 [RichtextFX](https://github.com/FXMisc/RichTextFX#download)
