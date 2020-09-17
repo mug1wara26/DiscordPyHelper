@@ -24,4 +24,4 @@ JavaFX application that helps guide you to create a discord.py bot using RichTex
 * Git intergration
 
 # Dependencies
-[RichtextFX](https://github.com/FXMisc/RichTextFX#download)
+[RichTextFX](https://github.com/FXMisc/RichTextFX#download)
