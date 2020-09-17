@@ -1,0 +1,35 @@
+$color : "2f2f2f";
+$styledTextColor : "1f1f1f";
+
+.menu .label{
+  -fx-text-fill: white;
+}
+
+.menu .separator:horizontal .line {
+  -fx-border-color: white;
+
+}
+
+.styled-text-area .text {
+  -fx-fill: white;
+}
+
+.styled-text-area {
+  -fx-background-color: $styledTextColor;
+}
+
+.caret {
+  -fx-stroke: white;
+}
+
+.lineno {
+  -fx-background-color: "8f8f8f";
+}
+
+.lineno .text {
+  -fx-fill: white;
+}
+
+.context-menu {
+  -fx-background-color: $color;
+}

@@ -1,0 +1,12 @@
+$inputTFColor : "5f5f5f";
+
+.inputTF {
+  -fx-background-color: $inputTFColor;
+  -fx-border-color: $inputTFColor;
+  -fx-border-radius: 3;
+}
+
+#displayPathLbl {
+  -fx-opacity: 0.5;
+  -fx-text-fill: white;
+}

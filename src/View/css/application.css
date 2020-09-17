@@ -1,0 +1,33 @@
+.menu .label {
+  -fx-text-fill: white;
+}
+
+.menu .separator:horizontal .line {
+  -fx-border-color: white;
+}
+
+.styled-text-area .text {
+  -fx-fill: white;
+}
+
+.styled-text-area {
+  -fx-background-color: "1f1f1f";
+}
+
+.caret {
+  -fx-stroke: white;
+}
+
+.lineno {
+  -fx-background-color: "282828";
+}
+
+.lineno .text {
+  -fx-fill: white;
+}
+
+.context-menu {
+  -fx-background-color: "2f2f2f";
+}
+
+/*# sourceMappingURL=application.css.map */
