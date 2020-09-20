@@ -5,9 +5,8 @@ import Model.PythonSyntaxArea;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import org.fxmisc.richtext.CodeArea;
@@ -21,6 +20,8 @@ import java.util.ResourceBundle;
 public class ApplicationController implements Initializable {
     @FXML
     private VBox codeAreaVBox;
+    @FXML
+    private TabPane commandsTab;
 
 
     private File lastFolderOpened = null;
@@ -28,11 +29,26 @@ public class ApplicationController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //Adding Code Area
         PythonSyntaxArea pythonSyntaxArea = new PythonSyntaxArea();
         CodeArea codeArea = pythonSyntaxArea.getCodeArea();
         codeArea.setPrefHeight(500);
 
         codeAreaVBox.getChildren().add(codeArea);
+
+
+        //Add Button to Tab Pane
+        Button addBtn = new Button();
+        Tab btnTab = new Tab("+");
+        btnTab.setGraphic(addBtn);
+        addBtn.setOnAction(e -> {
+            handleAddBtn();
+        });
+
+    }
+
+    private void handleAddBtn() {
+
     }
 
 
@@ -102,12 +118,15 @@ public class ApplicationController implements Initializable {
         if(saveConfirmation()) Main.getStage().close();
     }
 
+    @FXML
     public void handleMenuCopy(ActionEvent e) {
     }
 
+    @FXML
     public void handleMenuCopyAbsolutePath(ActionEvent e) {
     }
 
+    @FXML
     public void handleMenuPaste(ActionEvent e) {
     }
 }

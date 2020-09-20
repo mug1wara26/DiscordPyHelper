@@ -6,6 +6,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
@@ -46,13 +47,16 @@
             </MenuBar>
          </top>
          <center>
-            <VBox fx:id="codeAreaVBox" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <VBox fx:id="codeAreaVBox" prefHeight="1055.0" prefWidth="1700.0" BorderPane.alignment="CENTER">
                <BorderPane.margin>
                   <Insets right="20.0" />
-               </BorderPane.margin></VBox>
+               </BorderPane.margin>
+               <children>
+                  <TabPane fx:id="commandsTab" prefHeight="1055.0" prefWidth="1700.0" tabClosingPolicy="UNAVAILABLE" />
+               </children></VBox>
          </center>
          <left>
-            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+            <VBox prefHeight="1055.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </left>
       </BorderPane>
    </children>
