@@ -30,8 +30,20 @@
   -fx-background-color: "2f2f2f";
 }
 
-.tab-pane {
-  -fx-background-color: "2f2f2f";
+#addBtn {
+  -fx-background-color: "383838";
+}
+
+#addBtnTab {
+  -fx-background-color: "1f1f1f";
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+  -fx-background-color: "1f1f1f";
+}
+
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+  -fx-border-color: transparent;
 }
 
 /*# sourceMappingURL=application.css.map */

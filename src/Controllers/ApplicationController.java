@@ -4,11 +4,16 @@ import Model.Main;
 import Model.PythonSyntaxArea;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.File;
@@ -22,6 +27,10 @@ public class ApplicationController implements Initializable {
     private VBox codeAreaVBox;
     @FXML
     private TabPane commandsTab;
+    @FXML
+    private Tab addBtnTab;
+    @FXML
+    private Button addBtn;
 
 
     private File lastFolderOpened = null;
@@ -29,26 +38,22 @@ public class ApplicationController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //Adding Code Area
-        PythonSyntaxArea pythonSyntaxArea = new PythonSyntaxArea();
-        CodeArea codeArea = pythonSyntaxArea.getCodeArea();
-        codeArea.setPrefHeight(500);
+        //Add tooltip to button that add commands
+        Tooltip tooltip = new Tooltip("Add new command");
+        tooltip.setShowDelay(Duration.seconds(0.5));
+        addBtn.setTooltip(tooltip);
 
-        codeAreaVBox.getChildren().add(codeArea);
-
-
-        //Add Button to Tab Pane
-        Button addBtn = new Button();
-        Tab btnTab = new Tab("+");
-        btnTab.setGraphic(addBtn);
-        addBtn.setOnAction(e -> {
-            handleAddBtn();
-        });
-
+        addBtnTab.setDisable(true);
     }
 
-    private void handleAddBtn() {
+    @FXML
+    public void handleAddBtn(ActionEvent e) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/View/addCommand.fxml"));
 
+        Stage stage = new Stage();
+        stage.setTitle("Create Command");
+        stage.setScene(new Scene(root, 640, 480));
+        stage.show();
     }
 
 
@@ -57,7 +62,8 @@ public class ApplicationController implements Initializable {
         save(new GetBotInfoController().getBotFolderPath());
     }
 
-    private void save(String folderPath) {}
+    private void save(String folderPath) {
+    }
 
     private boolean saveConfirmation() {
         Alert a = new Alert(AlertType.CONFIRMATION, "Do you want to save your project?", ButtonType.YES, ButtonType.NO);
