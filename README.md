@@ -27,4 +27,5 @@ You can view the list of features that has to be implemented [here](https://docs
 
 # Dependencies
 [RichTextFX](https://github.com/FXMisc/RichTextFX#download)
-Download the [Fat Jar](https://github.com/FXMisc/RichTextFX/releases/download/v0.10.5/richtextfx-fat-0.10.5.jar) and add it to the project
+
+The fat jar file is included in the download
