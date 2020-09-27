@@ -54,7 +54,7 @@ public class AddCommandController implements Initializable {
         positionalRB.setSelected(true);
 
         //Initialize PosArgSpinner
-        SpinnerValueFactory<Integer> svf = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99);
+        SpinnerValueFactory<Integer> svf = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99);
         posArgSpinner.setValueFactory(svf);
 
         //Initialize posArgs
