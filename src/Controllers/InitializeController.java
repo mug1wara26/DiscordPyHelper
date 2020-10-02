@@ -39,6 +39,16 @@ public class InitializeController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        File dph = new File("DPH");
+        if(!dph.exists()) {
+            dph.mkdir();
+            File initializeDph = new File("DPH/initialize.DPH");
+            try {
+                initializeDph.createNewFile();
+            } catch (IOException e) {
+                Main.alert(AlertType.ERROR, "Could not initialize files");
+            }
+        }
         title1.setFont(TITLEFONT);
         title2.setFont(TITLEFONT);
         pythonLogo.setImage(new Image(new File("resources/1200px-Python-logo-notext.svg.png").toURI().toString()));

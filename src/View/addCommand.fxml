@@ -7,13 +7,16 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" styleClass="background" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddCommandController">
 
@@ -54,63 +57,239 @@
                               <VBox layoutX="199.0" layoutY="-17.0" prefHeight="341.0" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                                  <children>
                                     <Hyperlink fx:id="helpArgHL" onAction="#handleHelpArgHL" text="Help" />
-                                    <RadioButton fx:id="positionalRB" mnemonicParsing="false" onAction="#handlePositionalRB" text="Positional" textFill="WHITE">
-                                       <padding>
+                                    <RadioButton fx:id="positionalRB" mnemonicParsing="false" onAction="#handlePositionalRB" text="Positional">
+                                       <VBox.margin>
                                           <Insets top="20.0" />
-                                       </padding>
+                                       </VBox.margin>
                                     </RadioButton>
-                                    <RadioButton fx:id="variableRB" mnemonicParsing="false" onAction="#handleVariableRB" text="Variable/Keyword-Only" textFill="WHITE">
-                                       <padding>
-                                          <Insets top="10.0" />
-                                       </padding>
+                                    <RadioButton fx:id="variableRB" mnemonicParsing="false" onAction="#handleVariableRB" text="Variable/Keyword-Only">
+                                       <VBox.margin>
+                                          <Insets top="5.0" />
+                                       </VBox.margin>
                                     </RadioButton>
-                                    <Label fx:id="warningLbl" prefHeight="44.0" prefWidth="150.0" text="*Note: Variable and Keyword-Only arguments are mutually exclusive from each other, meaning you can not have both in the function definition" wrapText="true" />
+                                    <Label prefHeight="73.0" prefWidth="150.0" styleClass="warning-lbl" text="*Note: Variable and Keyword-Only arguments are mutually exclusive from each other, meaning you can not have both in the function definition" wrapText="true" />
                                  </children>
                               </VBox>
-                              <VBox layoutX="157.0" layoutY="63.0" prefHeight="351.0" prefWidth="470.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                              <VBox layoutX="170.0" layoutY="20.0" prefHeight="351.0" prefWidth="470.0">
+                              <StackPane prefHeight="341.0" prefWidth="470.0" AnchorPane.leftAnchor="150.0">
                                  <children>
-                                    <Label fx:id="posArgLbl" text="Number of positional arguments:" />
-                                    <Spinner fx:id="posArgSpinner" editable="true">
-                                       <VBox.margin>
-                                          <Insets top="10.0" />
-                                       </VBox.margin>
-                                    </Spinner>
-                                    <Label fx:id="setPosArgNameLbl" text="Set Argument Name">
-                                       <VBox.margin>
-                                          <Insets top="20.0" />
-                                       </VBox.margin>
-                                    </Label>
-                                    <ComboBox fx:id="posArgNameCB" onAction="#handlePosArgNameCB" onMouseClicked="#posArgNameCBME" prefWidth="150.0">
-                                       <VBox.margin>
-                                          <Insets top="10.0" />
-                                       </VBox.margin>
-                                    </ComboBox>
-                                    <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0">
-                                       <VBox.margin>
-                                          <Insets top="10.0" />
-                                       </VBox.margin>
+                                    <VBox fx:id="varKeywordVBox" disable="true" prefHeight="341.0" prefWidth="470.0" visible="false">
                                        <children>
-                                          <TextField fx:id="posArgSetNameTF" disable="true" onKeyTyped="#handlePosArgSetNameTF" prefHeight="30.0" prefWidth="151.0" />
-                                          <Button fx:id="posArgNameBtn" disable="true" mnemonicParsing="false" onAction="#handlePosArgNameBtn" prefHeight="30.0" prefWidth="68.0" text="Set Name">
-                                             <HBox.margin>
-                                                <Insets left="10.0" />
-                                             </HBox.margin>
-                                          </Button>
+                                          <RadioButton fx:id="varArgRB" mnemonicParsing="false" onAction="#handleVarArgRB" text="Variable Argument" textFill="#0f0000" />
+                                          <RadioButton fx:id="keywordOnlyRB" mnemonicParsing="false" onAction="#handleKeywordOnlyRB" text="Keyword-Only Argument">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </RadioButton>
                                        </children>
-                                    </HBox>
+                                       <StackPane.margin>
+                                          <Insets left="10.0" top="10.0" />
+                                       </StackPane.margin>
+                                    </VBox>
+                                    <VBox fx:id="posArgVBox" prefHeight="341.0" prefWidth="470.0">
+                                       <children>
+                                          <Label fx:id="posArgLbl" text="Number of positional arguments:" />
+                                          <Spinner fx:id="posArgSpinner" editable="true">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </Spinner>
+                                          <Label fx:id="setPosArgNameLbl" text="Set default value">
+                                             <VBox.margin>
+                                                <Insets top="20.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <ComboBox fx:id="posArgNameCB" onAction="#handlePosArgNameCB" onMouseClicked="#posArgNameCBME" prefWidth="150.0">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </ComboBox>
+                                          <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                             <children>
+                                                <TextField fx:id="posArgDefaultValTF" prefHeight="30.0" prefWidth="150.0" promptText="Default Value (Optional)">
+                                                   <font>
+                                                      <Font name="Eras Medium ITC" size="12.0" />
+                                                   </font>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </TextField>
+                                                <Button fx:id="posArgNameBtn" disable="true" mnemonicParsing="false" onAction="#handlePosArgNameBtn" prefHeight="30.0" prefWidth="45.0" styleClass="submit-btn" text="Set">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                          <Label alignment="TOP_LEFT" prefHeight="35.0" prefWidth="460.0" styleClass="warning-lbl" text="*Note: that the default value text field takes in input literally, if you would like your default value to be a string, include the double quotes(&quot;). This is to allow the use of other literals or keywords." wrapText="true" />
+                                       </children>
+                                       <StackPane.margin>
+                                          <Insets left="10.0" />
+                                       </StackPane.margin>
+                                    </VBox>
                                  </children>
-                              </VBox>
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </StackPane>
+                              <Separator layoutX="160.0" orientation="VERTICAL" prefHeight="350.0" prefWidth="0.0" />
                            </children>
                         </AnchorPane>
                     </content>
                   </Tab>
                   <Tab text="Converters">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox layoutX="177.0" layoutY="63.0" prefHeight="341.0" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                 <children>
+                                    <Hyperlink fx:id="helpConvHL" onAction="#handleHelpConverterHL" text="Help" />
+                                    <RadioButton fx:id="discordConvRB" mnemonicParsing="false" onAction="#handleDiscordConvRB" text="Discord Converters">
+                                       <VBox.margin>
+                                          <Insets top="20.0" />
+                                       </VBox.margin>
+                                    </RadioButton>
+                                    <RadioButton fx:id="basicConvRB" mnemonicParsing="false" onAction="#handleBasicConvRB" text="Basic Converters">
+                                       <VBox.margin>
+                                          <Insets top="5.0" />
+                                       </VBox.margin>
+                                    </RadioButton>
+                                 </children>
+                              </VBox>
+                              <Separator layoutX="160.0" orientation="VERTICAL" prefHeight="350.0" />
+                              <StackPane layoutX="275.0" layoutY="100.0" prefHeight="350.6666666666667" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                 <children>
+                                    <VBox fx:id="discordConvVBox" disable="true" prefHeight="200.0" prefWidth="100.0" visible="false">
+                                       <children>
+                                          <HBox prefHeight="27.0" prefWidth="200.0">
+                                             <children>
+                                                <ComboBox fx:id="discordConvCB" prefHeight="26.0" prefWidth="150.0" promptText="Discord Converters" />
+                                                <Button mnemonicParsing="false" onAction="#handleAddDiscordConvBtn" prefHeight="27.0" prefWidth="50.0" text="Add">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                          <Label text="Remove your converters">
+                                             <VBox.margin>
+                                                <Insets top="20.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <HBox prefHeight="27.0" prefWidth="200.0">
+                                             <children>
+                                                <ComboBox fx:id="addedDiscordConvCB" prefHeight="26.0" prefWidth="150.0" promptText="Added Converters" />
+                                                <Button fx:id="removeDiscordConvBtn" mnemonicParsing="false" onAction="#handleRemoveDiscordConvBtn" prefHeight="27.0" prefWidth="70.0" text="Remove">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </HBox>
+                                          <HBox fx:id="setVarKeywordArgNameHBox1" alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="200.0">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </HBox>
+                                       </children>
+                                       <StackPane.margin>
+                                          <Insets />
+                                       </StackPane.margin>
+                                    </VBox>
+                                    <VBox fx:id="basicConvVBox" disable="true" prefHeight="200.0" prefWidth="100.0" visible="false">
+                                       <children>
+                                          <Label prefHeight="31.0" prefWidth="460.0" text="To add a basic converter, right click on the Converters folder in your project structure and under New, click on New Basic Converter." wrapText="true" />
+                                          <HBox prefHeight="26.0" prefWidth="200.0">
+                                             <children>
+                                                <ComboBox fx:id="basicConvCB" prefHeight="25.0" prefWidth="150.0" promptText="Basic Converters" />
+                                                <Button mnemonicParsing="false" onAction="#handleAddBasicConvBtn" prefHeight="27.0" prefWidth="50.0" text="Add">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                          <Label text="Remove your converters">
+                                             <VBox.margin>
+                                                <Insets top="25.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <HBox prefHeight="26.0" prefWidth="200.0">
+                                             <children>
+                                                <ComboBox prefHeight="25.0" prefWidth="150.0" promptText="Added Converters" />
+                                                <Button mnemonicParsing="false" onAction="#handleRemoveBasicConvBtn" prefHeight="27.0" prefWidth="70.0" text="Remove">
+                                                   <HBox.margin>
+                                                      <Insets left="10.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </StackPane>
+                           </children></AnchorPane>
                     </content>
                   </Tab>
                   <Tab text="Error Handlers">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox prefHeight="341.0" prefWidth="150.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                 <children>
+                                    <Hyperlink fx:id="helpErrHL" onAction="#handleHelpErrHL" text="Help" />
+                                    <RadioButton fx:id="haveErrRB" mnemonicParsing="false" onAction="#handleHaveErrRB" text="Have Error Handlers">
+                                       <VBox.margin>
+                                          <Insets top="20.0" />
+                                       </VBox.margin>
+                                    </RadioButton>
+                                    <RadioButton fx:id="noErrRB" mnemonicParsing="false" onAction="#handleNoErrRB" text="No Error Handlers">
+                                       <VBox.margin>
+                                          <Insets top="5.0" />
+                                       </VBox.margin>
+                                    </RadioButton>
+                                 </children>
+                              </VBox>
+                              <Separator layoutX="160.0" orientation="VERTICAL" prefHeight="350.0" />
+                              <VBox fx:id="errHandlerVBox" layoutX="220.0" prefHeight="350.6666666666667" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
+                                 <children>
+                                    <HBox prefHeight="27.0" prefWidth="200.0">
+                                       <children>
+                                          <ComboBox fx:id="errHandlerCB" prefWidth="160.0" promptText="Error Handlers" />
+                                          <Button mnemonicParsing="false" onAction="#handleAddErrHandler" prefHeight="27.0" prefWidth="50.0" text="Add">
+                                             <HBox.margin>
+                                                <Insets left="10.0" />
+                                             </HBox.margin>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                    <HBox prefHeight="27.0" prefWidth="200.0">
+                                       <children>
+                                          <ComboBox fx:id="addedErrHandlerCB" prefWidth="160.0" promptText="Added Error Handlers" />
+                                          <Button mnemonicParsing="false" onAction="#handleRemoveErrHandler" prefHeight="27.0" prefWidth="75.0" text="Remove">
+                                             <HBox.margin>
+                                                <Insets left="10.0" />
+                                             </HBox.margin>
+                                          </Button>
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets top="25.0" />
+                                       </VBox.margin>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children></AnchorPane>
+                    </content>
+                  </Tab>
+                  <Tab text="Decorators">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                     </content>

@@ -8,8 +8,8 @@
   -fx-font-size: 14px;
 }
 
-#warningLbl {
-  -fx-font-size: 8px;
+.warning-lbl {
+  -fx-font-size: 10px;
 }
 
 .text-field {
@@ -42,6 +42,31 @@
 .button {
   -fx-border-radius: 3;
   -fx-font-family: "Eras Medium ITC";
+  -fx-background-color: black;
+  -fx-border-color: white;
+  -fx-text-fill: white;
+}
+
+.radio-button {
+  -fx-font-family: "Eras Medium ITC";
+  -fx-text-fill: white;
+}
+
+.separator *.line {
+  -fx-border-style: solid;
+  -fx-border-width: 0.3px;
+  -fx-border-color: black;
+}
+
+.tree-view {
+  -fx-background-color: "3f3f3f";
+}
+
+#errTreeView .tree-cell {
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-family: "Eras Medium ITC";
+  -fx-background-color: "3f3f3f";
 }
 
 /*# sourceMappingURL=addCommand.css.map */

@@ -72,11 +72,8 @@ fabric.properties
 
 #Local folder
 Test
-DPH
+DPH/
 
 #scss files
 *.scss
 *.map
-
-#external libraries
-richtextfx-fat-0.10.5.jar
