@@ -481,33 +481,54 @@ public class AddCommandController implements Initializable {
         editCheckVBox.getChildren().clear();
         String paramsType = params.substring(0, params.indexOf("["));
         String paramContent = params.substring(params.indexOf("[") + 1, params.length() - 1);
+        StringBuilder infoLblText;
+        Label infoLbl;
 
         switch (paramsType) {
             case "Union":
                 String[] paramContentTokens = paramContent.split("[,]");
-                Label infoLbl = new Label();
-                StringBuilder infoLblText = new StringBuilder("Insert parameter for " + checkName +" check, it can only be a ");
-                for(int i = 0; i < paramContentTokens.length; i++) {
-                    infoLblText.append(paramContentTokens[i]);
-                    if(i < paramContentTokens.length - 2) infoLblText.append(", ");
-                    else if(i == paramContentTokens.length - 2) infoLblText.append(" or ");
-                }
-                infoLbl.setText(infoLblText.toString());
+                infoLbl = new Label();
+                infoLbl.setText(produceInfoLbl("Insert parameter for " + checkName +" check, it can only be a ", paramContentTokens));
                 infoLbl.setWrapText(true);
 
                 inputParamTF = new TextField();
+                inputParamTF.setPromptText("Insert Parameter");
 
                 editCheckVBox.getChildren().addAll(infoLbl, inputParamTF);
                 VBox.setMargin(inputParamTF, new Insets(10, 0, 0, 0));
 
                 break;
             case "List":
+                String innerParam = paramContent.substring(paramContent.indexOf("[") + 1, paramContent.length() - 1);
+                String[] innerParamTokens = innerParam.split("[,]");
+
+                infoLbl = new Label();
+                infoLbl.setText(produceInfoLbl("Insert parameter for " + checkName +" check, it is a list that can only contain ", innerParamTokens) + ". Note that you need not include the list literal but everything in the textfield will be taken literally");
+                infoLbl.setWrapText(true);
+
+                inputParamTF = new TextField();
+                inputParamTF.setPromptText("Insert List Parameter");
+
+                editCheckVBox.getChildren().addAll(infoLbl, inputParamTF);
+                VBox.setMargin(inputParamTF, new Insets(10, 0, 0, 0));
+
                 break;
             case "args":
                 break;
             case "kwargs":
                 break;
         }
+    }
+
+    private String produceInfoLbl(String initString, String[] paramContentTokens) {
+        StringBuilder infoLblText = new StringBuilder(initString);
+        for(int i = 0; i < paramContentTokens.length; i++) {
+            infoLblText.append(paramContentTokens[i]);
+            if(i < paramContentTokens.length - 2) infoLblText.append(", ");
+            else if(i == paramContentTokens.length - 2) infoLblText.append(" or ");
+        }
+
+        return infoLblText.toString();
     }
 
 
