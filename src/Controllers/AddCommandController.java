@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -478,15 +479,35 @@ public class AddCommandController implements Initializable {
             return;
         }
 
-        editCheckVBox.getChildren().clear();
         String paramsType = params.substring(0, params.indexOf("["));
         String paramContent = params.substring(params.indexOf("[") + 1, params.length() - 1);
         StringBuilder infoLblText;
         Label infoLbl;
+        String[] paramContentTokens;
+
+        editCheckVBox.getChildren().clear();
+
+        Hyperlink checkHelpHL = new Hyperlink();
+        checkHelpHL.setText("Help");
+        Tooltip checkHelpToolTip = new Tooltip(defaultChecks.getURL(checkName));
+        checkHelpToolTip.setShowDelay(Duration.seconds(0.3));
+        checkHelpHL.setTooltip(checkHelpToolTip);
+
+        checkHelpHL.setOnAction(e -> {
+            try {
+                handleHyperlink(checkHelpHL, defaultChecks.getURL(checkName));
+            } catch (URISyntaxException | IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        editCheckVBox.getChildren().add(checkHelpHL);
+        VBox.setMargin(checkHelpHL, new Insets(0, 0, 10, 0));
+
 
         switch (paramsType) {
             case "Union":
-                String[] paramContentTokens = paramContent.split("[,]");
+                paramContentTokens = paramContent.split("[,]");
                 infoLbl = new Label();
                 infoLbl.setText(produceInfoLbl("Insert parameter for " + checkName +" check, it can only be a ", paramContentTokens));
                 infoLbl.setWrapText(true);
@@ -514,8 +535,25 @@ public class AddCommandController implements Initializable {
 
                 break;
             case "args":
+                infoLbl = new Label();
+                infoLbl.setText("Insert arguments for " + checkName + " check.");
+                infoLbl.setWrapText(true);
+
+                editCheckVBox.getChildren().add(infoLbl);
+
+                paramContentTokens = paramContent.split("[,]");
+                for(String arg : paramContentTokens) {
+                    TextField inputCheckArgTF = new TextField();
+                    inputCheckArgTF.setPromptText(arg);
+                    editCheckVBox.getChildren().add(inputCheckArgTF);
+                    VBox.setMargin(inputCheckArgTF, new Insets(10, 0, 0, 0));
+                }
+
                 break;
             case "kwargs":
+                if(paramContent.equals("Permissions")) {
+                    
+                }
                 break;
         }
     }

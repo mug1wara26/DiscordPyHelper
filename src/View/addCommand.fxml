@@ -126,7 +126,7 @@
                                           <Label alignment="TOP_LEFT" prefHeight="35.0" prefWidth="460.0" styleClass="warning-lbl" text="*Note: that the default value text field takes in input literally, if you would like your default value to be a string, include the double quotes(&quot;). This is to allow the use of other literals or keywords." wrapText="true" />
                                        </children>
                                        <StackPane.margin>
-                                          <Insets left="10.0" />
+                                          <Insets left="10.0" top="10.0" />
                                        </StackPane.margin>
                                     </VBox>
                                  </children>
@@ -323,7 +323,7 @@
                                     </VBox>
                                  </children>
                               </HBox>
-                              <VBox layoutX="10.0" layoutY="-1.0" prefHeight="341.0" prefWidth="160.0">
+                              <VBox layoutX="10.0" layoutY="-1.0" prefHeight="341.0" prefWidth="160.0" AnchorPane.topAnchor="10.0">
                                  <children>
                                     <Hyperlink fx:id="helpChecksHL" onAction="#handleHelpChecksHL" text="Help" />
                                     <RadioButton fx:id="haveChecksRB" mnemonicParsing="false" onAction="#handleHaveChecksRB" text="Default Checks">
