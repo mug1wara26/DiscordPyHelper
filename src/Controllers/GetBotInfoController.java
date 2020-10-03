@@ -21,6 +21,8 @@ public class GetBotInfoController implements Initializable {
     @FXML
     private TextField inputTokenTF;
     @FXML
+    private TextField inputPrefixTF;
+    @FXML
     private Button finishBtn;
 
     private final String DEFAULTPATH = new InitializeController().getDefaultPath();
@@ -29,25 +31,41 @@ public class GetBotInfoController implements Initializable {
     public String getBotFolderPath() {return botFolderPath;}
 
 
+    //Method to check if TextFields are empty so i dont repeat code
+    private void isTFEmpty() {
+        if(!inputNameTF.getText().isEmpty() && !inputTokenTF.getText().isEmpty() && !inputPrefixTF.getText().isEmpty()) finishBtn.setDisable(false);
+        else finishBtn.setDisable(true);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         displayPathLbl.setText("Bot Project Path: " + DEFAULTPATH + "\\");
+
+
         inputNameTF.setOnKeyTyped(e -> {
-            if(!inputNameTF.getText().isEmpty() && !inputTokenTF.getText().isEmpty()) finishBtn.setDisable(false);
-            else finishBtn.setDisable(true);
+            isTFEmpty();
 
             displayPathLbl.setText("Bot Project Path: " + DEFAULTPATH + "\\" + inputNameTF.getText());
         });
 
         inputTokenTF.setOnKeyTyped(e -> {
-            if(!inputNameTF.getText().isEmpty() && !inputTokenTF.getText().isEmpty()) finishBtn.setDisable(false);
-            else finishBtn.setDisable(true);
+            isTFEmpty();
+        });
+
+        inputPrefixTF.setOnKeyTyped(e -> {
+            isTFEmpty();
         });
     }
 
 
     @FXML
     public void handleFinishBtn(ActionEvent e) throws IOException {
+        if(inputPrefixTF.getText().contains(" ")) {
+            Main.alert(Alert.AlertType.ERROR, "Prefix cannot contain spaces!");
+            return;
+        }
+
+
         boolean error = false;
         boolean safeDelete = true;
         botFolderPath = DEFAULTPATH + "\\" + inputNameTF.getText();
@@ -99,7 +117,8 @@ public class GetBotInfoController implements Initializable {
             line = mainPyReader2.readLine();
         }
 
-        mainPyWriter.write(content.toString());
+        String formattedContent = String.format(content.toString(), inputPrefixTF.getText());
+        mainPyWriter.write(formattedContent);
         mainPyWriter.close();
         mainPyReader1.close();
         mainPyReader2.close();

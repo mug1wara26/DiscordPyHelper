@@ -1,12 +1,15 @@
 package Controllers;
 
+import Model.DefaultChecks;
 import Model.Main;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -14,9 +17,7 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,6 +104,25 @@ public class AddCommandController implements Initializable {
     private String[] errorHandlers = new String[]{"DiscordException", "CommandError", "ConversionError", "UserInputError", "MissingRequiredArgument", "TooManyArguments", "BadArgument", "MessageNotFound", "MemberNotFound", "UserNotFoun", "ChannelNotFound", "ChannelNotReadable", "BadColourArgument", "RoleNotFound", "BadInviteArgument", "EmojiNotFound", "PartialEmojiConversionFailure", "BadBoolArgument", "BadUnionArgument", "ArgumentParsingError", "UnexpectedQuoteError", "InvalidEndOfQuotedStringError", "ExpectedClosingQuoteError", "CommandNotFound", "CheckFailure", "CheckAnyFailure ", "PrivateMessageOnly", "NoPrivateMessage", "NotOwner", "MissingPermissions", "BotMissingPermissions", "MissingRole", "BotMissingRole", "MissingAnyRole", "BotMissingAnyRole", "NSFWChannelRequired", "DisabledCommand", "CommandInvokeError", "CommandOnCooldown", "MaxConcurrencyReached", "ExtensionError", "ExtensionAlreadyLoaded", "ExtensionNotLoaded", "NoEntryPointError", "ExtensionFailed", "ExtensionNotFound", "ClientException", "CommandRegistrationError"};
 
 
+    //Variables required for checks
+    @FXML
+    private RadioButton haveChecksRB;
+    @FXML
+    private RadioButton noChecksRB;
+    @FXML
+    private Hyperlink helpChecksHL;
+    @FXML
+    private Button addDefaultCheckBtn;
+    @FXML
+    private ComboBox<String> defaultChecksCB;
+    @FXML
+    private VBox editCheckVBox;
+    private TextField inputParamTF;
+
+    DefaultChecks defaultChecks = new DefaultChecks();
+    private String helpChecksLink = "https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#checks";
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         discordConvDefaultNames = new String[discordConvNames.length];
@@ -151,7 +171,7 @@ public class AddCommandController implements Initializable {
 
 
         //ERROR HANDLING TAB
-        //Initiaize tooltips for help hyperlink
+        //Initialize tooltips for help hyperlink
         Tooltip helpErrToolTip = new Tooltip(helpErrLink);
         helpArgToolTip.setShowDelay(Duration.seconds(0.3));
         helpErrHL.setTooltip(helpErrToolTip);
@@ -165,6 +185,22 @@ public class AddCommandController implements Initializable {
         //Setting up Error Handlers CB
         Arrays.sort(errorHandlers);
         errHandlerCB.getItems().addAll(errorHandlers);
+
+
+        //CHECKS TAB
+        //Initialize tooltips for help hyperlink
+        Tooltip helpChecksToolTip = new Tooltip(helpChecksLink);
+        helpChecksToolTip.setShowDelay(Duration.seconds(0.3));
+        helpChecksHL.setTooltip(helpChecksToolTip);
+
+        //Set ToggleGroup for radio buttons
+        ToggleGroup checksGroup = new ToggleGroup();
+        haveChecksRB.setToggleGroup(checksGroup);
+        noChecksRB.setToggleGroup(checksGroup);
+        haveChecksRB.setSelected(true);
+
+        //Set up Combo Box
+        defaultChecksCB.getItems().addAll(defaultChecks.getDefaultChecks());
     }
 
     //Method to make setting hyperlinks easier
@@ -433,6 +469,49 @@ public class AddCommandController implements Initializable {
 
 
     //ERROR HANDLING TAB
+    //Method for parsing the default checks
+    private void parseCheckName(String checkName) {
+        String params = defaultChecks.getDefaultParams(checkName);
+
+        if(params == null) {
+            Main.alert(Alert.AlertType.ERROR, "Select a check!");
+            return;
+        }
+
+        editCheckVBox.getChildren().clear();
+        String paramsType = params.substring(0, params.indexOf("["));
+        String paramContent = params.substring(params.indexOf("[") + 1, params.length() - 1);
+
+        switch (paramsType) {
+            case "Union":
+                String[] paramContentTokens = paramContent.split("[,]");
+                Label infoLbl = new Label();
+                StringBuilder infoLblText = new StringBuilder("Insert parameter for " + checkName +" check, it can only be a ");
+                for(int i = 0; i < paramContentTokens.length; i++) {
+                    infoLblText.append(paramContentTokens[i]);
+                    if(i < paramContentTokens.length - 2) infoLblText.append(", ");
+                    else if(i == paramContentTokens.length - 2) infoLblText.append(" or ");
+                }
+                infoLbl.setText(infoLblText.toString());
+                infoLbl.setWrapText(true);
+
+                inputParamTF = new TextField();
+
+                editCheckVBox.getChildren().addAll(infoLbl, inputParamTF);
+                VBox.setMargin(inputParamTF, new Insets(10, 0, 0, 0));
+
+                break;
+            case "List":
+                break;
+            case "args":
+                break;
+            case "kwargs":
+                break;
+        }
+    }
+
+
+
     @FXML
     public void handleHelpErrHL(ActionEvent e) throws IOException, URISyntaxException {
         handleHyperlink(helpErrHL, helpErrLink);
@@ -472,5 +551,27 @@ public class AddCommandController implements Initializable {
         errHandlerCB.getItems().add(addedErrHandlerCB.getValue());
         errHandlerCB.getItems().sort(Comparator.naturalOrder());
         addedErrHandlerCB.getItems().remove(addedErrHandlerCB.getValue());
+    }
+
+    @FXML
+    public void handleHelpChecksHL(ActionEvent e) throws IOException, URISyntaxException {
+        handleHyperlink(helpChecksHL, helpChecksLink);
+    }
+
+    @FXML
+    public void handleHaveChecksRB(ActionEvent e) {
+    }
+
+    @FXML
+    public void handleNoChecksRB(ActionEvent e) {
+    }
+
+    @FXML
+    public void handleDefaultChecksCB(ActionEvent e) {
+        if(defaultChecksCB.getValue() == null) {
+            Main.alert(Alert.AlertType.ERROR, "Pick a check!");
+            return;
+        }
+        parseCheckName(defaultChecksCB.getValue());
     }
 }
