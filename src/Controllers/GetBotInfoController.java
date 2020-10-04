@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import java.io.*;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class GetBotInfoController implements Initializable {
     @FXML
@@ -25,7 +26,9 @@ public class GetBotInfoController implements Initializable {
     @FXML
     private Button finishBtn;
 
-    private final String DEFAULTPATH = new InitializeController().getDefaultPath();
+    Preferences pref = Preferences.userNodeForPackage(getClass());
+    final String INIT_PATH_KEY = "initPath";
+    private final String DEFAULTPATH = pref.get(INIT_PATH_KEY, null);
     private String botFolderPath = null;
 
     public String getBotFolderPath() {return botFolderPath;}

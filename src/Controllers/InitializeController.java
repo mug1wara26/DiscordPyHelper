@@ -16,9 +16,8 @@ import javafx.stage.DirectoryChooser;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class InitializeController implements Initializable {
     @FXML
@@ -34,21 +33,13 @@ public class InitializeController implements Initializable {
 
 
     private final Font TITLEFONT = Font.loadFont("file:resources/fonts/PatrickHand-Regular.ttf", 30);
-    private final String INITIALIZEPATH = "DPH/initialize.DPH";
     private File lastFolderOpened = null;
+
+    final String INIT_PATH_KEY = "initPath";
+    Preferences prefs = Preferences.userNodeForPackage(getClass());
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        File dph = new File("DPH");
-        if(!dph.exists()) {
-            dph.mkdir();
-            File initializeDph = new File("DPH/initialize.DPH");
-            try {
-                initializeDph.createNewFile();
-            } catch (IOException e) {
-                Main.alert(AlertType.ERROR, "Could not initialize files");
-            }
-        }
         title1.setFont(TITLEFONT);
         title2.setFont(TITLEFONT);
         pythonLogo.setImage(new Image(new File("resources/1200px-Python-logo-notext.svg.png").toURI().toString()));
@@ -70,50 +61,9 @@ public class InitializeController implements Initializable {
         });
     }
 
-    //Method to get tokens easier
-    private String[] getTokens(String filePath, String regex) {
-        ArrayList<String> tokens = new ArrayList<>();
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            String line = "dummy";
-            line = reader.readLine();
-            if (line != null) Collections.addAll(tokens, line.split(regex));
-            reader.close();
-        }
-        catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return tokens.toArray(new String[]{});
-    }
-
-    public void editTokens(String filePath, String[] editedTokens) {
-        if(editedTokens.length != 0) {
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-
-                StringBuilder writeLine = new StringBuilder("");
-                writeLine.append(editedTokens[0]);
-                for(int i = 1; i < editedTokens.length; i++) {
-                    writeLine.append(",").append(editedTokens[i]);
-                }
-
-                writer.write(writeLine.toString());
-                writer.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    public String getDefaultPath() {
-        return getTokens(INITIALIZEPATH, "[,]")[0];
-    }
 
     public void handleNewBtn(ActionEvent e) throws IOException {
-        String[] tokens = getTokens(INITIALIZEPATH, "[,]");
-        ArrayList<String> editedTokens = new ArrayList<>();
-
-        if(tokens.length == 0) {
+        if(prefs.get(INIT_PATH_KEY, null) == null) {
             Main.alert(AlertType.INFORMATION, "Default Directory has not been initialized yet, please select a default directory", true);
 
             DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -123,8 +73,7 @@ public class InitializeController implements Initializable {
             File selectedFolder = directoryChooser.showDialog(null);
             if(selectedFolder != null) {
                 lastFolderOpened = selectedFolder;
-                editedTokens.add(selectedFolder.getAbsolutePath());
-                editTokens(INITIALIZEPATH, editedTokens.toArray(new String[]{}));
+                prefs.put(INIT_PATH_KEY, selectedFolder.getAbsolutePath());
             }
         }
         else {

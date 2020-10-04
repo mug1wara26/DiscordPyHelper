@@ -8,6 +8,7 @@ module DiscordPyHelper {
     requires javafx.web;
     requires javafx.swt;
     requires richtextfx.fat;
+    requires java.prefs;
     opens Controllers;
     opens Model;
     opens View;

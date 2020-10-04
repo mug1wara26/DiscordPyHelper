@@ -10,9 +10,9 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -122,6 +122,7 @@ public class AddCommandController implements Initializable {
 
     DefaultChecks defaultChecks = new DefaultChecks();
     private String helpChecksLink = "https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#checks";
+    private ArrayList<String> requiredFields = new ArrayList<>();
 
 
     @Override
@@ -475,7 +476,6 @@ public class AddCommandController implements Initializable {
         String params = defaultChecks.getDefaultParams(checkName);
 
         if(params == null) {
-            Main.alert(Alert.AlertType.ERROR, "Select a check!");
             return;
         }
 
@@ -552,7 +552,28 @@ public class AddCommandController implements Initializable {
                 break;
             case "kwargs":
                 if(paramContent.equals("Permissions")) {
-                    
+                    VBox permissionRoot = new VBox();
+
+                    ScrollPane permissionScrollPane = new ScrollPane();
+                    permissionScrollPane.setPrefHeight(250);
+                    permissionScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+                    permissionScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+                    permissionScrollPane.setContent(permissionRoot);
+
+                    String[] permissionsArr = new String[]{"create_instant_invite", "kick_members", "ban_members", "administrator", "manage_channels", "manage_guild", "add_reactions", "view_audit_log", "priority_speaker", "stream", "read_messages", "view_channel", "send_messages", "send_tts_messages", "manage_messages", "manage_messages", "attach_files", "read_message_history", "mention_everyone", "external_emojis", "use_external_emojis", "view_guild_insights", "connect", "speak", "mute_members", "deafen_members", "move_members", "use_voice_activation", "change_nickname", "manage_nicknames", "manage_roles", "manage_permissions", "manage_webhooks", "manage_emojis"};
+
+                    for(String permission : permissionsArr) {
+                        CheckBox permissionCheckBox = new CheckBox();
+                        permissionCheckBox.setText(permission);
+
+                        permissionRoot.getChildren().add(permissionCheckBox);
+                    }
+
+
+                    permissionRoot.setStyle("-fx-background-color: black");
+                    permissionRoot.setPrefWidth(400);
+
+                    editCheckVBox.getChildren().add(permissionScrollPane);
                 }
                 break;
         }
@@ -631,6 +652,7 @@ public class AddCommandController implements Initializable {
             Main.alert(Alert.AlertType.ERROR, "Pick a check!");
             return;
         }
+
         parseCheckName(defaultChecksCB.getValue());
     }
 }
