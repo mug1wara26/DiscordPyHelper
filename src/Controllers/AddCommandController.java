@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
@@ -130,6 +130,10 @@ public class AddCommandController implements Initializable {
     private ArrayList<TextField> requiredFields = new ArrayList<>();
 
 
+    //Variables required for cancel/add command
+    @FXML
+    private Button cancelBtn;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         discordConvDefaultNames = new String[discordConvNames.length];
@@ -139,13 +143,6 @@ public class AddCommandController implements Initializable {
         }
 
         //ARGUMENTS TAB
-        //Setting ToggleGroup for radio buttons
-        ToggleGroup argGroup = new ToggleGroup();
-        positionalRB.setToggleGroup(argGroup);
-        variableRB.setToggleGroup(argGroup);
-
-        positionalRB.setSelected(true);
-
         //Initialize tooltips for help hyperlink
         Tooltip helpArgToolTip = new Tooltip(helpArgLink);
         helpArgToolTip.setShowDelay(Duration.seconds(0.3));
@@ -238,11 +235,13 @@ public class AddCommandController implements Initializable {
     //Handlers for Radio Buttons
     @FXML
     public void handlePositionalRB(ActionEvent e) {
+        variableRB.setSelected(false);
         posArgVis(true);
     }
 
     @FXML
     public void handleVariableRB(ActionEvent e) {
+        positionalRB.setSelected(false);
         posArgVis(false);
     }
 
@@ -705,5 +704,18 @@ public class AddCommandController implements Initializable {
     @FXML
     public void handleRemoveDefaultCheckBtn(ActionEvent e) {
         addedChecksCB.getItems().remove(addedChecksCB.getValue());
+    }
+
+
+    //Cancel or add command
+    @FXML
+    public void handleCancelBtn(ActionEvent e) {
+        Stage stage = (Stage) cancelBtn.getScene().getWindow();
+        stage.close();
+    }
+
+    @FXML
+    public void handleNextBtn(ActionEvent e) {
+
     }
 }

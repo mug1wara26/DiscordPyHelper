@@ -67,7 +67,7 @@ public class ApplicationController implements Initializable {
 
         //Add tooltip to button that add commands
         Tooltip tooltip = new Tooltip("Add new command");
-        tooltip.setShowDelay(Duration.seconds(0.5));
+        tooltip.setShowDelay(Duration.seconds(0.3));
         addBtn.setTooltip(tooltip);
 
         addBtnTab.setDisable(true);
@@ -88,7 +88,7 @@ public class ApplicationController implements Initializable {
 
     //Method that saves the entire project
     private void save() {
-        save(new GetBotInfoController().getBotFolderPath());
+        save(GetBotInfoController.getBotFolderPath());
     }
 
     private void save(String folderPath) {
