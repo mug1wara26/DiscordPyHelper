@@ -72,7 +72,6 @@ fabric.properties
 
 #Local folder
 Test
-DPH/
 
 #scss files
 *.scss

@@ -28,10 +28,10 @@ public class GetBotInfoController implements Initializable {
 
     Preferences pref = Preferences.userNodeForPackage(getClass());
     final String INIT_PATH_KEY = "initPath";
-    private final String DEFAULTPATH = pref.get(INIT_PATH_KEY, null);
-    private String botFolderPath = null;
+    private final String DEFAULT_PATH = pref.get(INIT_PATH_KEY, null);
+    private static String botFolderPath = null;
 
-    public String getBotFolderPath() {return botFolderPath;}
+    public static String getBotFolderPath() {return botFolderPath;}
 
 
     //Method to check if TextFields are empty so i dont repeat code
@@ -42,13 +42,13 @@ public class GetBotInfoController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        displayPathLbl.setText("Bot Project Path: " + DEFAULTPATH + "\\");
+        displayPathLbl.setText("Bot Project Path: " + DEFAULT_PATH + "\\");
 
 
         inputNameTF.setOnKeyTyped(e -> {
             isTFEmpty();
 
-            displayPathLbl.setText("Bot Project Path: " + DEFAULTPATH + "\\" + inputNameTF.getText());
+            displayPathLbl.setText("Bot Project Path: " + DEFAULT_PATH + "\\" + inputNameTF.getText());
         });
 
         inputTokenTF.setOnKeyTyped(e -> {
@@ -71,7 +71,7 @@ public class GetBotInfoController implements Initializable {
 
         boolean error = false;
         boolean safeDelete = true;
-        botFolderPath = DEFAULTPATH + "\\" + inputNameTF.getText();
+        botFolderPath = DEFAULT_PATH + "\\" + inputNameTF.getText();
 
         File botFolder = new File(botFolderPath);
         boolean result = botFolder.mkdir();
@@ -162,7 +162,6 @@ public class GetBotInfoController implements Initializable {
         }
         else {
             Main.changeScene("/View/application.fxml");
-            Main.getStage().setMaximized(true);
         }
     }
 

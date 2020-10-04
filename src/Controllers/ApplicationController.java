@@ -11,26 +11,33 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.fxmisc.richtext.CodeArea;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Scanner;
+import java.util.prefs.Preferences;
 
 public class ApplicationController implements Initializable {
     @FXML
     private VBox codeAreaVBox;
     @FXML
-    private TabPane commandsTab;
+    private TabPane commandsTabPane;
     @FXML
     private Tab addBtnTab;
     @FXML
     private Button addBtn;
+    @FXML
+    private Tab mainPyTab;
 
 
     private File lastFolderOpened = null;
@@ -38,6 +45,26 @@ public class ApplicationController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Main.getStage().setMaximized(true);
+
+        //Setting up code area for main.py
+        VBox mainPyVBox = new VBox();
+        CodeArea mainPyCA = PythonSyntaxArea.getCodeArea();
+        mainPyCA.setPrefHeight(700);
+
+
+        String content = null;
+        try {
+            content = new Scanner(new File(GetBotInfoController.getBotFolderPath() + "\\main.py")).useDelimiter("\\Z").next();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        mainPyCA.appendText(content);
+
+
+        mainPyVBox.getChildren().add(mainPyCA);
+        mainPyTab.setContent(mainPyVBox);
+
         //Add tooltip to button that add commands
         Tooltip tooltip = new Tooltip("Add new command");
         tooltip.setShowDelay(Duration.seconds(0.5));
@@ -54,6 +81,8 @@ public class ApplicationController implements Initializable {
         stage.setTitle("Create Command");
         stage.setScene(new Scene(root, 640, 480));
         stage.show();
+
+
     }
 
 

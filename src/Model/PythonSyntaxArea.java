@@ -12,9 +12,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PythonSyntaxArea {
-    private CodeArea codeArea;
+    private static CodeArea codeArea;
 
-    public PythonSyntaxArea() {
+    public static CodeArea getCodeArea() {
         codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 
@@ -49,11 +49,6 @@ public class PythonSyntaxArea {
                 }
             }
         });
-
-        codeArea.setStyle("-fx-background-color: #1f1f1f");
-    }
-
-    public CodeArea getCodeArea() {
         return codeArea;
     }
 

@@ -18,12 +18,8 @@
   -fx-stroke: white;
 }
 
-.lineno {
-  -fx-background-color: "8f8f8f";
-}
-
 .lineno .text {
-  -fx-fill: white;
+  -fx-fill: black;
 }
 
 .context-menu {
@@ -35,7 +31,20 @@
 }
 
 #addBtnTab {
+  -fx-opacity: 1;
   -fx-background-color: "1f1f1f";
+}
+
+.tab {
+  -fx-background-color: "383838";
+}
+
+.tab .tab-label {
+  -fx-text-fill: white;
+}
+
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected {
+  -fx-border-color: black;
 }
 
 .tab-pane .tab-header-area .tab-header-background {

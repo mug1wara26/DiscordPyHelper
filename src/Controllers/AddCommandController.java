@@ -7,12 +7,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -113,16 +115,19 @@ public class AddCommandController implements Initializable {
     @FXML
     private Hyperlink helpChecksHL;
     @FXML
-    private Button addDefaultCheckBtn;
-    @FXML
     private ComboBox<String> defaultChecksCB;
     @FXML
     private VBox editCheckVBox;
+    @FXML
+    private ComboBox<String> addedChecksCB;
+    @FXML
+    private HBox haveChecksHBox;
+
     private TextField inputParamTF;
 
     DefaultChecks defaultChecks = new DefaultChecks();
     private String helpChecksLink = "https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#checks";
-    private ArrayList<String> requiredFields = new ArrayList<>();
+    private ArrayList<TextField> requiredFields = new ArrayList<>();
 
 
     @Override
@@ -473,7 +478,10 @@ public class AddCommandController implements Initializable {
     //ERROR HANDLING TAB
     //Method for parsing the default checks
     private void parseCheckName(String checkName) {
+        editCheckVBox.getChildren().clear();
+
         String params = defaultChecks.getDefaultParams(checkName);
+        requiredFields.clear();
 
         if(params == null) {
             return;
@@ -485,7 +493,6 @@ public class AddCommandController implements Initializable {
         Label infoLbl;
         String[] paramContentTokens;
 
-        editCheckVBox.getChildren().clear();
 
         Hyperlink checkHelpHL = new Hyperlink();
         checkHelpHL.setText("Help");
@@ -509,7 +516,7 @@ public class AddCommandController implements Initializable {
             case "Union":
                 paramContentTokens = paramContent.split("[,]");
                 infoLbl = new Label();
-                infoLbl.setText(produceInfoLbl("Insert parameter for " + checkName +" check, it can only be a ", paramContentTokens));
+                infoLbl.setText(produceInfoLbl("Insert parameter for " + checkName +" check, it can only be a ", paramContentTokens) + "Note that everything in the TextField is taken literally, include your literals.");
                 infoLbl.setWrapText(true);
 
                 inputParamTF = new TextField();
@@ -518,13 +525,14 @@ public class AddCommandController implements Initializable {
                 editCheckVBox.getChildren().addAll(infoLbl, inputParamTF);
                 VBox.setMargin(inputParamTF, new Insets(10, 0, 0, 0));
 
+                requiredFields.add(inputParamTF);
                 break;
             case "List":
                 String innerParam = paramContent.substring(paramContent.indexOf("[") + 1, paramContent.length() - 1);
                 String[] innerParamTokens = innerParam.split("[,]");
 
                 infoLbl = new Label();
-                infoLbl.setText(produceInfoLbl("Insert parameter for " + checkName +" check, it is a list that can only contain ", innerParamTokens) + ". Note that you need not include the list literal but everything in the textfield will be taken literally");
+                infoLbl.setText(produceInfoLbl("Insert parameter for " + checkName +" check, it is a list that can only contain ", innerParamTokens) + ". Note that you need not include the list literal but everything else in the textfield will be taken literally.");
                 infoLbl.setWrapText(true);
 
                 inputParamTF = new TextField();
@@ -533,6 +541,7 @@ public class AddCommandController implements Initializable {
                 editCheckVBox.getChildren().addAll(infoLbl, inputParamTF);
                 VBox.setMargin(inputParamTF, new Insets(10, 0, 0, 0));
 
+                requiredFields.add(inputParamTF);
                 break;
             case "args":
                 infoLbl = new Label();
@@ -547,6 +556,8 @@ public class AddCommandController implements Initializable {
                     inputCheckArgTF.setPromptText(arg);
                     editCheckVBox.getChildren().add(inputCheckArgTF);
                     VBox.setMargin(inputCheckArgTF, new Insets(10, 0, 0, 0));
+
+                    requiredFields.add(inputCheckArgTF);
                 }
 
                 break;
@@ -566,12 +577,16 @@ public class AddCommandController implements Initializable {
                         CheckBox permissionCheckBox = new CheckBox();
                         permissionCheckBox.setText(permission);
 
+                        VBox.setMargin(permissionCheckBox, new Insets(2, 0, 0, 0));
+
                         permissionRoot.getChildren().add(permissionCheckBox);
                     }
 
 
-                    permissionRoot.setStyle("-fx-background-color: black");
+                    permissionRoot.setStyle("-fx-background-color: #3f3f3f");
                     permissionRoot.setPrefWidth(400);
+                    permissionScrollPane.getStyleClass().add("checks-scroll-pane");
+                    permissionScrollPane.getStyleClass().add("edge-to-edge");
 
                     editCheckVBox.getChildren().add(permissionScrollPane);
                 }
@@ -640,10 +655,14 @@ public class AddCommandController implements Initializable {
 
     @FXML
     public void handleHaveChecksRB(ActionEvent e) {
+        haveChecksHBox.setVisible(true);
+        haveChecksHBox.setDisable(false);
     }
 
     @FXML
     public void handleNoChecksRB(ActionEvent e) {
+        haveChecksHBox.setVisible(false);
+        haveChecksHBox.setDisable(true);
     }
 
     @FXML
@@ -654,5 +673,37 @@ public class AddCommandController implements Initializable {
         }
 
         parseCheckName(defaultChecksCB.getValue());
+    }
+
+    @FXML
+    public void handleAddDefaultCheckBtn(ActionEvent e) {
+        if(defaultChecksCB.getValue() == null) {
+            Main.alert(Alert.AlertType.ERROR, "Choose a check!");
+            return;
+        }
+
+        if(addedChecksCB.getItems().contains(defaultChecksCB.getValue())) {
+            Main.alert(Alert.AlertType.ERROR, "Check has already been added!");
+        }
+
+        boolean requiredFieldsFilled = true;
+        for(TextField textField : requiredFields) {
+            if(textField.getText().isEmpty()) {
+                requiredFieldsFilled = false;
+                break;
+            }
+        }
+
+        if(!requiredFieldsFilled) {
+            Main.alert(Alert.AlertType.ERROR, "Please fill in all required fields!");
+            return;
+        }
+
+        addedChecksCB.getItems().add(defaultChecksCB.getValue());
+    }
+
+    @FXML
+    public void handleRemoveDefaultCheckBtn(ActionEvent e) {
+        addedChecksCB.getItems().remove(addedChecksCB.getValue());
     }
 }
