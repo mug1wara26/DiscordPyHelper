@@ -18,7 +18,7 @@ public class Main extends Application {
         Main.primaryStage = stage;
         primaryStage.setTitle("DiscordPyHelper");
 
-        Parent root = FXMLLoader.load(getClass().getResource("/View/initialize.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/View/main.fxml"));
         scene = new Scene(root);
 
         primaryStage.setScene(scene);
@@ -33,7 +33,6 @@ public class Main extends Application {
 
     public static void changeScene(String fxml) throws IOException {
         Parent root = FXMLLoader.load(Main.class.getResource(fxml));
-
         primaryStage.getScene().setRoot(root);
     }
 

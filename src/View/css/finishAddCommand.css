@@ -1,0 +1,25 @@
+.label {
+  -fx-text-fill: white;
+  -fx-font-family: "Eras Medium ITC";
+  -fx-font-size: 12px;
+}
+
+#commandDefLbl {
+  -fx-font-family: Consolas;
+}
+
+.command-scroll-pane {
+  -fx-border-color: "2f2f2f";
+  -fx-background-color: "2f2f2f";
+}
+
+.command-scroll-pane .scroll-bar {
+  -fx-background-color: "2f2f2f";
+  -fx-border-radius: 0;
+}
+
+.command-scroll-pane > .viewport {
+  -fx-background-color: transparent;
+}
+
+/*# sourceMappingURL=finishAddCommand.css.map */

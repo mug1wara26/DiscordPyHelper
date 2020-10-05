@@ -12,9 +12,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PythonSyntaxArea {
-    private static CodeArea codeArea;
+    private CodeArea codeArea;
 
-    public static CodeArea getCodeArea() {
+    public CodeArea getCodeArea() {
         codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
 

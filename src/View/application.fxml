@@ -7,8 +7,10 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
@@ -54,27 +56,33 @@
                   <Insets right="20.0" />
                </BorderPane.margin>
                <children>
-                  <TabPane fx:id="commandsTabPane" prefHeight="1055.0" prefWidth="1700.0" tabClosingPolicy="ALL_TABS">
-                     <tabs>
-                        <Tab fx:id="mainPyTab" text="main.py">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                          </content>
-                        </Tab>
-                        <Tab fx:id="addBtnTab" closable="false" disable="true">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                          </content>
-                           <graphic>
-                              <Button fx:id="addBtn" mnemonicParsing="false" onAction="#handleAddBtn" text="+" textFill="WHITE" />
-                           </graphic>
-                        </Tab>
-                     </tabs></TabPane>
+                  <SplitPane dividerPositions="0.10063224446786091" prefHeight="820.0" prefWidth="1900.0">
+                     <items>
+                        <TreeView fx:id="fileTreeView" prefHeight="200.0" prefWidth="200.0" />
+                        <TabPane fx:id="commandsTabPane" prefHeight="1055.0" prefWidth="1700.0" tabClosingPolicy="ALL_TABS">
+                           <tabs>
+                              <Tab fx:id="mainPyTab" text="main.py">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                </content>
+                              </Tab>
+                              <Tab fx:id="addBtnTab" closable="false" disable="true">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                </content>
+                                 <graphic>
+                                    <Button fx:id="addBtn" mnemonicParsing="false" onAction="#handleAddBtn" text="+" textFill="WHITE" />
+                                 </graphic>
+                              </Tab>
+                           </tabs>
+                        </TabPane>
+                     </items>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </SplitPane>
                </children></VBox>
          </center>
-         <left>
-            <VBox prefHeight="1055.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-         </left>
       </BorderPane>
    </children>
 

@@ -92,7 +92,7 @@
                                           <Insets left="10.0" top="10.0" />
                                        </StackPane.margin>
                                     </VBox>
-                                    <VBox fx:id="posArgVBox" prefHeight="341.0" prefWidth="470.0">
+                                    <VBox fx:id="posArgVBox" disable="true" prefHeight="341.0" prefWidth="470.0" visible="false">
                                        <children>
                                           <Label fx:id="posArgLbl" text="Number of positional arguments:" />
                                           <Spinner fx:id="posArgSpinner" editable="true">
@@ -130,7 +130,7 @@
                                                 </Button>
                                              </children>
                                           </HBox>
-                                          <Label alignment="TOP_LEFT" prefHeight="35.0" prefWidth="460.0" styleClass="warning-lbl" text="*Note: that the default value text field takes in input literally, if you would like your default value to be a string, include the double quotes(&quot;). This is to allow the use of other literals or keywords." wrapText="true" />
+                                          <Label alignment="TOP_LEFT" prefHeight="35.0" prefWidth="460.0" styleClass="warning-lbl" text="*Note: that the default value text field takes in input literally, if you would like your default value to be a string, include the string literal. This is to allow the use of other literals or keywords." wrapText="true" />
                                        </children>
                                        <StackPane.margin>
                                           <Insets left="10.0" top="10.0" />
@@ -321,7 +321,7 @@
                                                 <Insets top="5.0" />
                                              </VBox.margin>
                                           </Button>
-                                          <CheckBox mnemonicParsing="false" text="Use check_any()?">
+                                          <CheckBox fx:id="checkAnyCheckBox" mnemonicParsing="false" text="Use check_any()?">
                                              <VBox.margin>
                                                 <Insets top="5.0" />
                                              </VBox.margin>

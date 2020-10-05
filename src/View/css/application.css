@@ -1,17 +1,15 @@
 .menu .label {
   -fx-text-fill: white;
 }
-
 .menu .separator:horizontal .line {
   -fx-border-color: white;
 }
 
-.styled-text-area .text {
-  -fx-fill: white;
-}
-
 .styled-text-area {
   -fx-background-color: "1f1f1f";
+}
+.styled-text-area .text {
+  -fx-fill: white;
 }
 
 .caret {
@@ -38,21 +36,38 @@
 .tab {
   -fx-background-color: "383838";
 }
-
 .tab .tab-label {
   -fx-text-fill: white;
-}
-
-.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected {
-  -fx-border-color: black;
 }
 
 .tab-pane .tab-header-area .tab-header-background {
   -fx-background-color: "1f1f1f";
 }
 
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected {
+  -fx-border-color: black;
+}
 .tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
   -fx-border-color: transparent;
+}
+
+.split-pane {
+  -fx-background-color: "2f2f2f";
+}
+
+.split-pane-divider {
+  -fx-background-color: transparent;
+}
+
+.tree-view {
+  -fx-background-color: "2f2f2f";
+}
+.tree-view .tree-cell {
+  -fx-background-color: "2f2f2f";
+  -fx-text-fill: white;
+}
+.tree-view .tree-cell > .tree-disclosure-node > .arrow {
+  -fx-background-color: white;
 }
 
 /*# sourceMappingURL=application.css.map */

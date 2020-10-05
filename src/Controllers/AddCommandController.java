@@ -1,5 +1,7 @@
 package Controllers;
 
+import Model.Check;
+import Model.Command;
 import Model.DefaultChecks;
 import Model.Main;
 import javafx.collections.ObservableList;
@@ -26,6 +28,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AddCommandController implements Initializable {
+    @FXML
+    private TextField commandNameTF;
+    @FXML
+    private TextField commandDescTF;
+
     //Variables required for Arguments tab
     @FXML
     private RadioButton positionalRB;
@@ -122,12 +129,17 @@ public class AddCommandController implements Initializable {
     private ComboBox<String> addedChecksCB;
     @FXML
     private HBox haveChecksHBox;
+    @FXML
+    private CheckBox checkAnyCheckBox;
 
     private TextField inputParamTF;
 
     DefaultChecks defaultChecks = new DefaultChecks();
     private String helpChecksLink = "https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#checks";
     private ArrayList<TextField> requiredFields = new ArrayList<>();
+    private ArrayList<Check> checks = new ArrayList<>();
+    ArrayList<CheckBox> permissionsCheckBox = new ArrayList<>();
+    String paramsType;
 
 
     //Variables required for cancel/add command
@@ -152,23 +164,12 @@ public class AddCommandController implements Initializable {
         SpinnerValueFactory<Integer> svf = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 99);
         posArgSpinner.setValueFactory(svf);
 
-        //Initialize posArgs
-        posArgVis(true);
-
 
         //CONVERTERS TAB
         //Initialize tooltips for help hyperlink
         Tooltip helpConverterToolTip = new Tooltip(helpConverterLink);
         helpArgToolTip.setShowDelay(Duration.seconds(0.3));
         helpConvHL.setTooltip(helpConverterToolTip);
-
-        //Set ToggleGroup for radio buttons
-        ToggleGroup convGroup = new ToggleGroup();
-        discordConvRB.setToggleGroup(convGroup);
-        basicConvRB.setToggleGroup(convGroup);
-        discordConvRB.setSelected(true);
-        discordConvVBox.setVisible(true);
-        discordConvVBox.setDisable(false);
 
         //Initialize ComboBoxes
         discordConvCB.getItems().addAll(discordConvNames);
@@ -222,8 +223,11 @@ public class AddCommandController implements Initializable {
         posArgVBox.setVisible(b);
         posArgVBox.setDisable(!b);
 
-        varKeywordVBox.setVisible(!b);
-        varKeywordVBox.setDisable(b);
+    }
+
+    private void varArgVis(boolean b) {
+        varKeywordVBox.setVisible(b);
+        varKeywordVBox.setDisable(!b);
     }
 
     //Handler for help hyperlinks
@@ -236,13 +240,21 @@ public class AddCommandController implements Initializable {
     @FXML
     public void handlePositionalRB(ActionEvent e) {
         variableRB.setSelected(false);
-        posArgVis(true);
+        if (positionalRB.isSelected()) {
+            posArgVis(true);
+            varArgVis(false);
+        }
+        else posArgVis(false);
     }
 
     @FXML
     public void handleVariableRB(ActionEvent e) {
         positionalRB.setSelected(false);
-        posArgVis(false);
+        if(variableRB.isSelected()) {
+            posArgVis(false);
+            varArgVis(true);
+        }
+        else varArgVis(false);
     }
 
     @FXML
@@ -412,21 +424,34 @@ public class AddCommandController implements Initializable {
     //Handler for RB
     @FXML
     public void handleDiscordConvRB(ActionEvent e) {
-        discordConvVBox.setVisible(true);
-        basicConvVBox.setVisible(false);
+        basicConvRB.setSelected(false);
+        if(discordConvRB.isSelected()) {
+            discordConvVBox.setVisible(true);
+            basicConvVBox.setVisible(false);
 
-        discordConvVBox.setDisable(false);
-        basicConvVBox.setDisable(true);
+            discordConvVBox.setDisable(false);
+            basicConvVBox.setDisable(true);
+        }
+        else {
+            discordConvVBox.setVisible(false);
+            discordConvVBox.setDisable(true);
+        }
     }
 
     @FXML
     public void handleBasicConvRB(ActionEvent e) {
-        basicConvVBox.setVisible(true);
-        discordConvVBox.setVisible(false);
+        discordConvRB.setSelected(false);
+        if(basicConvRB.isSelected()) {
+            basicConvVBox.setVisible(true);
+            discordConvVBox.setVisible(false);
 
-        basicConvVBox.setDisable(false);
-        discordConvVBox.setDisable(true);
-
+            basicConvVBox.setDisable(false);
+            discordConvVBox.setDisable(true);
+        }
+        else {
+            basicConvVBox.setVisible(false);
+            basicConvVBox.setDisable(true);
+        }
     }
 
 
@@ -474,21 +499,65 @@ public class AddCommandController implements Initializable {
 
 
 
-    //ERROR HANDLING TAB
-    //Method for parsing the default checks
+    //ERROR HANDLING TAB=
+    @FXML
+    public void handleHelpErrHL(ActionEvent e) throws IOException, URISyntaxException {
+        handleHyperlink(helpErrHL, helpErrLink);
+    }
+
+    @FXML
+    public void handleHaveErrRB(ActionEvent e) {
+        errHandlerVBox.setVisible(true);
+        errHandlerVBox.setDisable(false);
+    }
+
+    @FXML
+    public void handleNoErrRB(ActionEvent e) {
+        errHandlerVBox.setVisible(false);
+        errHandlerVBox.setDisable(true);
+    }
+
+    @FXML
+    public void handleAddErrHandler(ActionEvent e) {
+        if(errHandlerCB.getValue() == null) {
+            Main.alert(Alert.AlertType.ERROR, "Select an error handler to add!");
+            return;
+        }
+
+        addedErrHandlerCB.getItems().add(errHandlerCB.getValue());
+        addedErrHandlerCB.getItems().sort(Comparator.naturalOrder());
+        errHandlerCB.getItems().remove(errHandlerCB.getValue());
+    }
+
+    @FXML
+    public void handleRemoveErrHandler(ActionEvent e) {
+        if(addedErrHandlerCB.getValue() == null) {
+            Main.alert(Alert.AlertType.ERROR, "Select an error handler to remove!");
+            return;
+        }
+
+        errHandlerCB.getItems().add(addedErrHandlerCB.getValue());
+        errHandlerCB.getItems().sort(Comparator.naturalOrder());
+        addedErrHandlerCB.getItems().remove(addedErrHandlerCB.getValue());
+    }
+
+
+
+    //CHECKS TAB
+    // Method for parsing the default checks
     private void parseCheckName(String checkName) {
         editCheckVBox.getChildren().clear();
 
         String params = defaultChecks.getDefaultParams(checkName);
         requiredFields.clear();
+        permissionsCheckBox.clear();
 
         if(params == null) {
             return;
         }
 
-        String paramsType = params.substring(0, params.indexOf("["));
+        paramsType = params.substring(0, params.indexOf("["));
         String paramContent = params.substring(params.indexOf("[") + 1, params.length() - 1);
-        StringBuilder infoLblText;
         Label infoLbl;
         String[] paramContentTokens;
 
@@ -578,6 +647,7 @@ public class AddCommandController implements Initializable {
 
                         VBox.setMargin(permissionCheckBox, new Insets(2, 0, 0, 0));
 
+                        permissionsCheckBox.add(permissionCheckBox);
                         permissionRoot.getChildren().add(permissionCheckBox);
                     }
 
@@ -605,48 +675,6 @@ public class AddCommandController implements Initializable {
     }
 
 
-
-    @FXML
-    public void handleHelpErrHL(ActionEvent e) throws IOException, URISyntaxException {
-        handleHyperlink(helpErrHL, helpErrLink);
-    }
-
-    @FXML
-    public void handleHaveErrRB(ActionEvent e) {
-        errHandlerVBox.setVisible(true);
-        errHandlerVBox.setDisable(false);
-    }
-
-    @FXML
-    public void handleNoErrRB(ActionEvent e) {
-        errHandlerVBox.setVisible(false);
-        errHandlerVBox.setDisable(true);
-    }
-
-    @FXML
-    public void handleAddErrHandler(ActionEvent e) {
-        if(errHandlerCB.getValue() == null) {
-            Main.alert(Alert.AlertType.ERROR, "Select an error handler to add!");
-            return;
-        }
-
-        addedErrHandlerCB.getItems().add(errHandlerCB.getValue());
-        addedErrHandlerCB.getItems().sort(Comparator.naturalOrder());
-        errHandlerCB.getItems().remove(errHandlerCB.getValue());
-    }
-
-    @FXML
-    public void handleRemoveErrHandler(ActionEvent e) {
-        if(addedErrHandlerCB.getValue() == null) {
-            Main.alert(Alert.AlertType.ERROR, "Select an error handler to remove!");
-            return;
-        }
-
-        errHandlerCB.getItems().add(addedErrHandlerCB.getValue());
-        errHandlerCB.getItems().sort(Comparator.naturalOrder());
-        addedErrHandlerCB.getItems().remove(addedErrHandlerCB.getValue());
-    }
-
     @FXML
     public void handleHelpChecksHL(ActionEvent e) throws IOException, URISyntaxException {
         handleHyperlink(helpChecksHL, helpChecksLink);
@@ -666,10 +694,8 @@ public class AddCommandController implements Initializable {
 
     @FXML
     public void handleDefaultChecksCB(ActionEvent e) {
-        if(defaultChecksCB.getValue() == null) {
-            Main.alert(Alert.AlertType.ERROR, "Pick a check!");
-            return;
-        }
+        if(defaultChecksCB.getValue() == null) return;
+
 
         parseCheckName(defaultChecksCB.getValue());
     }
@@ -683,6 +709,7 @@ public class AddCommandController implements Initializable {
 
         if(addedChecksCB.getItems().contains(defaultChecksCB.getValue())) {
             Main.alert(Alert.AlertType.ERROR, "Check has already been added!");
+            return;
         }
 
         boolean requiredFieldsFilled = true;
@@ -699,6 +726,22 @@ public class AddCommandController implements Initializable {
         }
 
         addedChecksCB.getItems().add(defaultChecksCB.getValue());
+        Check check = new Check(defaultChecksCB.getValue(), paramsType);
+
+        if(requiredFields.isEmpty() || permissionsCheckBox.isEmpty()) {
+            if (!requiredFields.isEmpty()) {
+                for (TextField tf : requiredFields) {
+                    check.addParams(tf.getText());
+                }
+            }
+            if (!permissionsCheckBox.isEmpty()) {
+                for (CheckBox cb : permissionsCheckBox) {
+                    if(cb.isSelected()) check.addParams(cb.getText() + "=" + (cb.isSelected() + "").substring(0, 1).toUpperCase() + ("" + cb.isSelected()).substring(1));
+                }
+            }
+
+            checks.add(check);
+        }
     }
 
     @FXML
@@ -715,7 +758,18 @@ public class AddCommandController implements Initializable {
     }
 
     @FXML
-    public void handleNextBtn(ActionEvent e) {
+    public void handleNextBtn(ActionEvent e) throws IOException {
+        if(commandNameTF.getText().isEmpty() || commandDescTF.getText().isEmpty()) {
+            Main.alert(Alert.AlertType.ERROR, "Enter your command name and command description!");
+            return;
+        }
 
+        Command command = new Command(commandNameTF.getText(), commandDescTF.getText());
+        command.setChecks(checks);
+        command.setCheckAny(checkAnyCheckBox.isSelected());
+
+        FinishAddCommandController.setCommand(command);
+
+        Main.changeScene("/View/finishAddCommand.fxml");
     }
 }

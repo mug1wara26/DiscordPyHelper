@@ -10,9 +10,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -22,10 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Scanner;
-import java.util.prefs.Preferences;
+import java.util.*;
 
 public class ApplicationController implements Initializable {
     @FXML
@@ -38,6 +34,8 @@ public class ApplicationController implements Initializable {
     private Button addBtn;
     @FXML
     private Tab mainPyTab;
+    @FXML
+    private TreeView<String> fileTreeView;
 
 
     private File lastFolderOpened = null;
@@ -47,9 +45,17 @@ public class ApplicationController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Main.getStage().setMaximized(true);
 
+        //Display file structure
+        File projectFile = new File(GetBotInfoController.getBotFolderPath());
+        TreeItem<String> rootItem = new TreeItem<>(projectFile.getName());
+        fileTreeView.setRoot(rootItem);
+
+
+        displayFileStructure(rootItem, new File(GetBotInfoController.getBotFolderPath()));
+
         //Setting up code area for main.py
         VBox mainPyVBox = new VBox();
-        CodeArea mainPyCA = PythonSyntaxArea.getCodeArea();
+        CodeArea mainPyCA = new PythonSyntaxArea().getCodeArea();
         mainPyCA.setPrefHeight(700);
 
 
@@ -72,6 +78,17 @@ public class ApplicationController implements Initializable {
 
         addBtnTab.setDisable(true);
     }
+
+    private void displayFileStructure(TreeItem<String> root, File file) {
+        for(File childFile : Objects.requireNonNull(file.listFiles())) {
+            TreeItem<String> childItem = new TreeItem<>(childFile.getName());;
+            if(childFile.isDirectory()) {
+                displayFileStructure(childItem, childFile);
+            }
+            root.getChildren().add(childItem);
+        }
+    }
+
 
     @FXML
     public void handleAddBtn(ActionEvent e) throws IOException {
