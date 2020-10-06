@@ -18,7 +18,7 @@ public class Main extends Application {
         Main.primaryStage = stage;
         primaryStage.setTitle("DiscordPyHelper");
 
-        Parent root = FXMLLoader.load(getClass().getResource("/View/addCommand.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/View/initialize.fxml"));
         scene = new Scene(root);
 
         primaryStage.setScene(scene);

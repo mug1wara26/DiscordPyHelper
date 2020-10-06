@@ -39,7 +39,7 @@
                         <Insets left="10.0" />
                      </HBox.margin>
                   </Spinner>
-                  <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="48.0" text="Move">
+                  <Button mnemonicParsing="false" onAction="#handleMoveParamPos" prefHeight="26.0" prefWidth="48.0" text="Move">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>

@@ -1,6 +1,7 @@
 package Controllers;
 
 import Model.Command;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
@@ -38,5 +39,10 @@ public class FinishAddCommandController implements Initializable {
 
         SpinnerValueFactory<Integer> svf = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, params.size());
         paramPosSpinner.setValueFactory(svf);
+    }
+
+    @FXML
+    public void handleMoveParamPos(ActionEvent e) {
+
     }
 }
