@@ -1,14 +1,19 @@
 package Controllers;
 
 import Model.Command;
+import Model.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -33,8 +38,8 @@ public class FinishAddCommandController implements Initializable {
         commandDefLbl.setText(command.getCommandDef());
 
         params = command.getParams();
-        for(int i = 1; i <= params.size(); i++) {
-            paramsCB.getItems().add(i + ". " + params.get(i - 1));
+        for(String param : params) {
+            paramsCB.getItems().add(param);
         }
 
         SpinnerValueFactory<Integer> svf = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, params.size());
@@ -43,6 +48,28 @@ public class FinishAddCommandController implements Initializable {
 
     @FXML
     public void handleMoveParamPos(ActionEvent e) {
+        if(paramPosSpinner.getValue() == paramsCB.getItems().indexOf(paramsCB.getValue())) return;
 
+        int beforeIndex = paramsCB.getItems().indexOf(paramsCB.getValue());
+        int afterIndex = paramPosSpinner.getValue() - 1;
+        command.moveParams(beforeIndex, afterIndex);
+
+        paramsCB.getItems().clear();
+        paramsCB.getItems().addAll(command.getParams());
+        commandDefLbl.setText(command.getCommandDef());
+    }
+
+    @FXML
+    public void handlePreviousBtn(ActionEvent e) throws IOException {
+        Parent root = FXMLLoader.load(Main.class.getResource("/View/addCommand.fxml"));
+        commandDefLbl.getScene().setRoot(root);
+    }
+
+    @FXML
+    public void handleFinishBtn(ActionEvent e) {
+
+
+        Stage stage = (Stage) commandDefLbl.getScene().getWindow();
+        stage.close();
     }
 }

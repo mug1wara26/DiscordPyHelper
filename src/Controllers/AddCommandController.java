@@ -717,8 +717,19 @@ public class AddCommandController implements Initializable {
         command.setChecks(checks);
         command.setCheckAny(checkAnyCheckBox.isSelected());
 
+
         if(!posArgNameCB.getItems().isEmpty()) {
             command.addAllArgs(posArgNameCB.getItems());
+        }
+
+        if(posArgNameCB.getItems().isEmpty() && posArgSpinner.getValue() != 0) {
+            ObservableList<String> posArgs = posArgNameCB.getItems();
+            for (int i = 0; i < posArgSpinner.getValue(); i++) {
+                if (posArgSpinner.getValue() == 1) posArgs.add("arg");
+                else posArgs.add("arg" + (i + 1));
+            }
+
+            command.addAllArgs(posArgs);
         }
 
         if(varKeywordArgName.equals("varArg")) command.setVarArg(true);

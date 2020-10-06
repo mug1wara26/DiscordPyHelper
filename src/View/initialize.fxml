@@ -49,6 +49,6 @@
       </VBox>
    </children>
    <stylesheets>
-      <URL value="@css/main.css" />
+      <URL value="@css/initialize.css"/>
    </stylesheets>
 </AnchorPane>

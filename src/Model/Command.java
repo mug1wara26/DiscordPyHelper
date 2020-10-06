@@ -12,6 +12,7 @@ public class Command {
     private ArrayList<Check> checks;
     private ArrayList<String> args;
     private ArrayList<String> converters;
+    private ArrayList<String> params;
     private boolean checkAny;
     private boolean varArg;
     private boolean keywordArg;
@@ -21,6 +22,7 @@ public class Command {
         this.description = description;
         args = new ArrayList<>();
         converters = new ArrayList<>();
+        params = new ArrayList<>();
     }
 
     public void setVarArg(boolean varArg) {
@@ -33,6 +35,22 @@ public class Command {
 
     public void addAllArgs(ObservableList<String> args) {
         this.args.addAll(args);
+        params.addAll(args);
+    }
+
+    public void addAllConverters(ObservableList<String> converters) {
+        String converterName;
+        for(String converter : converters) {
+            converterName = converter + ":discord." + converter.substring(0, 1).toUpperCase();
+            Pattern pattern = Pattern.compile("\\d");
+            Matcher matcher = pattern.matcher(converter);
+            if(matcher.find()) {
+                converterName += converter.substring( 1, matcher.start());
+            }
+            else converterName += converter.substring(1);
+
+            params.add(converterName);
+        }
     }
 
     public void setCheckAny(boolean checkAny) {
@@ -43,19 +61,13 @@ public class Command {
         this.checks = checks;
     }
 
-    public void addAllConverters(ObservableList<String> converters) {
-        this.converters.addAll(converters);
-    }
-
     public ArrayList<String> getParams() {
-        ArrayList<String> params = new ArrayList<>(args);
-        params.addAll(converters);
-
         return params;
     }
 
-    public void moveParams(int index1, int index2) {
-
+    public void moveParams(int beforeIndex, int afterIndex) {
+        params.add(afterIndex, params.get(beforeIndex));
+        params.remove(beforeIndex + 1);
     }
 
     public String getCommandDef() {
@@ -79,21 +91,10 @@ public class Command {
 
         commandDef.append("async def ").append(name).append("(ctx");
 
-        for(String arg : args) {
-            commandDef.append(", ").append(arg);
+
+        for (String param : params) {
+            commandDef.append(", ").append(param);
         }
-
-
-        for(String converter: converters) {
-            commandDef.append(", ").append(converter).append(":discord.").append(converter.substring(0, 1).toUpperCase());
-            if(converter.matches("\\d")) {
-                Pattern pattern = Pattern.compile("\\d");
-                Matcher matcher = pattern.matcher(converter);
-                commandDef.append(converter, 1, matcher.start() - 2);
-            }
-            else commandDef.append(converter.substring(1));
-        }
-
 
         if(varArg) commandDef.append(", *varArg");
         if(keywordArg) commandDef.append(", *, keywordArg");
