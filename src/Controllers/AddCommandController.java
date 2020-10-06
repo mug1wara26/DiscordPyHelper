@@ -7,8 +7,10 @@ import Model.Main;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -59,7 +61,7 @@ public class AddCommandController implements Initializable {
 
     private ObservableList<String> posArgsNames;
     private String helpArgLink = "https://discordpy.readthedocs.io/en/latest/ext/commands/commands.html#positional";
-    private String varKeywordArgName;
+    private String varKeywordArgName = "";
 
 
     //Variables required for Converters tab
@@ -68,19 +70,13 @@ public class AddCommandController implements Initializable {
     @FXML
     private VBox discordConvVBox;
     @FXML
-    private VBox basicConvVBox;
-    @FXML
     private RadioButton discordConvRB;
     @FXML
-    private RadioButton basicConvRB;
+    private RadioButton noConvRB;
     @FXML
     private ComboBox<String> discordConvCB;
     @FXML
     private ComboBox<String> addedDiscordConvCB;
-    @FXML
-    private ComboBox<String> basicConvCB;
-    @FXML
-    private ComboBox<String> addedBasicConvCB;
 
     private String helpConverterLink = "https://discordpy.readthedocs.io/en/latest/ext/commands/commands.html#converters";
 
@@ -88,12 +84,6 @@ public class AddCommandController implements Initializable {
     private String[] discordConvNames = new String[]{"Member", "Message", "User", "TextChannel", "VoiceChannel", "CategoryChannel", "Role", "Invite", "Game", "Emoji", "PartialEmoji", "Colour"};
     private String[] discordConvDefaultNames;
     private int[] discordConvCount = new int[]{0,0,0,0,0,0,0,0,0,0,0,0};
-
-    //Basic converter vars
-    private ArrayList<String> basicConvNames = new ArrayList<>();
-    private ArrayList<String> basicConvDefaultNames = new ArrayList<>();
-    private ArrayList<Integer> basicConvCount = new ArrayList<>();
-    int[] basicConvCountArr = new int[basicConvCount.size()];
 
 
     //Variables required for Error Handling
@@ -166,6 +156,15 @@ public class AddCommandController implements Initializable {
 
 
         //CONVERTERS TAB
+        //Set ToggleGroup for radio buttons
+        ToggleGroup convGroup = new ToggleGroup();
+        discordConvRB.setToggleGroup(convGroup);
+        noConvRB.setToggleGroup(convGroup);
+
+        discordConvRB.setSelected(true);
+        discordConvVBox.setVisible(true);
+        discordConvVBox.setDisable(false);
+
         //Initialize tooltips for help hyperlink
         Tooltip helpConverterToolTip = new Tooltip(helpConverterLink);
         helpArgToolTip.setShowDelay(Duration.seconds(0.3));
@@ -424,34 +423,16 @@ public class AddCommandController implements Initializable {
     //Handler for RB
     @FXML
     public void handleDiscordConvRB(ActionEvent e) {
-        basicConvRB.setSelected(false);
-        if(discordConvRB.isSelected()) {
-            discordConvVBox.setVisible(true);
-            basicConvVBox.setVisible(false);
-
-            discordConvVBox.setDisable(false);
-            basicConvVBox.setDisable(true);
-        }
-        else {
-            discordConvVBox.setVisible(false);
-            discordConvVBox.setDisable(true);
-        }
+        discordConvVBox.setVisible(true);
+        discordConvVBox.setDisable(false);
     }
 
     @FXML
-    public void handleBasicConvRB(ActionEvent e) {
-        discordConvRB.setSelected(false);
-        if(basicConvRB.isSelected()) {
-            basicConvVBox.setVisible(true);
-            discordConvVBox.setVisible(false);
+    public void handleNoConvRB(ActionEvent e) {
+        discordConvVBox.setVisible(false);
+        discordConvVBox.setDisable(true);
 
-            basicConvVBox.setDisable(false);
-            discordConvVBox.setDisable(true);
-        }
-        else {
-            basicConvVBox.setVisible(false);
-            basicConvVBox.setDisable(true);
-        }
+        addedDiscordConvCB.getItems().clear();
     }
 
 
@@ -463,38 +444,6 @@ public class AddCommandController implements Initializable {
     @FXML
     public void handleRemoveDiscordConvBtn(ActionEvent e) {
         addedConverterRemoveItem(addedDiscordConvCB, discordConvDefaultNames, discordConvCount);
-    }
-
-    @FXML
-    public void handleAddBasicConvBtn(ActionEvent e) {
-        int[] basicConvCountArr = new int[basicConvCount.size()];
-        Iterator<Integer> iterator = basicConvCount.iterator();
-        for (int i = 0; i < basicConvCountArr.length; i++)
-        {
-            basicConvCountArr[i] = iterator.next().intValue();
-        }
-
-        addedConverterAddItem(basicConvCB, addedBasicConvCB, basicConvNames.toArray(new String[basicConvNames.size()]), basicConvCountArr);
-
-        for(int i = 0; i < basicConvCountArr.length; i++) {
-            basicConvCount.set(i, basicConvCountArr[i]);
-        }
-    }
-
-    @FXML
-    public void handleRemoveBasicConvBtn(ActionEvent e) {
-        int[] basicConvCountArr = new int[basicConvCount.size()];
-        Iterator<Integer> iterator = basicConvCount.iterator();
-        for (int i = 0; i < basicConvCountArr.length; i++)
-        {
-            basicConvCountArr[i] = iterator.next().intValue();
-        }
-
-        addedConverterRemoveItem(addedBasicConvCB, basicConvDefaultNames.toArray(new String[basicConvDefaultNames.size()]), basicConvCountArr);
-
-        for(int i = 0; i < basicConvCountArr.length; i++) {
-            basicConvCount.set(i, basicConvCountArr[i]);
-        }
     }
 
 
@@ -768,8 +717,18 @@ public class AddCommandController implements Initializable {
         command.setChecks(checks);
         command.setCheckAny(checkAnyCheckBox.isSelected());
 
+        if(!posArgNameCB.getItems().isEmpty()) {
+            command.addAllArgs(posArgNameCB.getItems());
+        }
+
+        if(varKeywordArgName.equals("varArg")) command.setVarArg(true);
+        if(varKeywordArgName.equals("keywordArg")) command.setKeywordArg(true);
+
+        command.addAllConverters(addedDiscordConvCB.getItems());
+
         FinishAddCommandController.setCommand(command);
 
-        Main.changeScene("/View/finishAddCommand.fxml");
+        Parent root = FXMLLoader.load(Main.class.getResource("/View/finishAddCommand.fxml"));
+        cancelBtn.getScene().setRoot(root);
     }
 }

@@ -2,4 +2,10 @@
   -fx-background-color: "2f2f2f";
 }
 
+.label {
+  -fx-text-fill: white;
+  -fx-font-family: "Eras Medium ITC";
+  -fx-font-size: 12px;
+}
+
 /*# sourceMappingURL=main.css.map */

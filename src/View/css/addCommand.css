@@ -1,9 +1,3 @@
-.label {
-  -fx-text-fill: white;
-  -fx-font-family: "Eras Medium ITC";
-  -fx-font-size: 12px;
-}
-
 #posArgLbl {
   -fx-font-size: 14px;
 }
@@ -21,19 +15,16 @@
 .tab-pane {
   -fx-background-color: "3f3f3f";
 }
-
 .tab-pane .tab-header-area .tab-header-background {
   -fx-background-color: "383838";
 }
-
-.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+.tab-pane :focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
   -fx-border-color: black;
 }
 
 .tab {
   -fx-background-color: "2f2f2f";
 }
-
 .tab .tab-label {
   -fx-text-fill: white;
 }
@@ -75,12 +66,10 @@
 .checks-scroll-pane {
   -fx-border-color: "3f3f3f";
 }
-
 .checks-scroll-pane .scroll-bar {
   -fx-background-color: "3f3f3f";
   -fx-border-radius: 0;
 }
-
 .checks-scroll-pane > .viewport {
   -fx-background-color: transparent;
 }
