@@ -1,12 +1,14 @@
 package Controllers;
 
 import Model.Main;
+import Model.Messenger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
@@ -61,27 +63,45 @@ public class InitializeController implements Initializable {
         });
     }
 
+    private void setDefaultDirectory() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Choose Default Directory");
+        if(lastFolderOpened != null) directoryChooser.setInitialDirectory(lastFolderOpened);
+
+        File selectedFolder = directoryChooser.showDialog(null);
+        if(selectedFolder != null) {
+            lastFolderOpened = selectedFolder;
+            prefs.put(INIT_PATH_KEY, selectedFolder.getAbsolutePath());
+        }
+    }
 
     public void handleNewBtn(ActionEvent e) throws IOException {
         if(prefs.get(INIT_PATH_KEY, null) == null) {
             Main.alert(AlertType.INFORMATION, "Default Directory has not been initialized yet, please select a default directory", true);
-
-            DirectoryChooser directoryChooser = new DirectoryChooser();
-            directoryChooser.setTitle("Choose Default Directory");
-            if(lastFolderOpened != null) directoryChooser.setInitialDirectory(lastFolderOpened);
-
-            File selectedFolder = directoryChooser.showDialog(null);
-            if(selectedFolder != null) {
-                lastFolderOpened = selectedFolder;
-                prefs.put(INIT_PATH_KEY, selectedFolder.getAbsolutePath());
-            }
+            setDefaultDirectory();
         }
         else {
             Main.changeScene("/View/getBotInfo.fxml");
         }
 }
 
-    public void handleOpenBtn(ActionEvent e) {
+    public void handleOpenBtn(ActionEvent e) throws IOException {
+        if(prefs.get(INIT_PATH_KEY, null) == null) {
+            Main.alert(AlertType.ERROR, "Default Directory has not been initialized yet, please select a default directory", true);
+            return;
+        }
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Open");
+        if(lastFolderOpened != null) directoryChooser.setInitialDirectory(lastFolderOpened);
 
+        File selectedFolder = directoryChooser.showDialog(null);
+        if(selectedFolder != null && prefs.get(INIT_PATH_KEY, null) == selectedFolder.getParentFile().getAbsolutePath()) {
+            lastFolderOpened = selectedFolder;
+            TreeItem<String> root = new TreeItem<>("");
+
+            Main.changeScene("/View/Application.fxml");
+            Messenger.getApplicationController().setBOT_FOLDER_PATH(selectedFolder.getAbsolutePath());
+            Messenger.getApplicationController().displayFileStructure(root, selectedFolder);
+        }
     }
 }

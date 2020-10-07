@@ -49,36 +49,27 @@ public class ApplicationController implements Initializable {
     private HBox outputHBox;
 
 
-    final String BOT_FOLDER_PATH = GetBotInfoController.getBotFolderPath();
+    String BOT_FOLDER_PATH = null;
     private TreeItem<String> commandDir;
-    private List<File> requiredFiles = Arrays.asList(Objects.requireNonNull(new File(BOT_FOLDER_PATH).listFiles()));
+    private List<File> requiredFiles = null;
+
+    public void setBOT_FOLDER_PATH(String bot_folder_path) {
+        BOT_FOLDER_PATH = bot_folder_path;
+        requiredFiles = Arrays.asList(Objects.requireNonNull(new File(BOT_FOLDER_PATH).listFiles()));
+    }
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        Messenger.setApplicationController(this);
         Main.getStage().setMaximized(true);
 
         //Set commandsTabPane in messenger class
         commandsTabPane.setPrefHeight(Main.getStage().getHeight() * 0.6);
-        Messenger.setApplicationController(this);
 
         //Display file structure
         File projectFile = new File(BOT_FOLDER_PATH);
         TreeItem<String> rootItem = new TreeItem<>("");
-        rootItem.setGraphic(new Label(projectFile.getName()));
-
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem newFile = new MenuItem("New File");
-        newFile.setOnAction(e -> {
-            try {
-                addFile(rootItem, projectFile);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
-        contextMenu.getItems().add(newFile);
-        rootItem.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(rootItem.getGraphic(), e.getScreenX(), e.getScreenY()));
-        fileTreeView.setRoot(rootItem);
 
         displayFileStructure(rootItem, new File(BOT_FOLDER_PATH));
 
@@ -113,7 +104,21 @@ public class ApplicationController implements Initializable {
         addBtnTab.setDisable(true);
     }
 
-    private void displayFileStructure(TreeItem<String> root, File file) {
+    public void displayFileStructure(TreeItem<String> root, File file) {
+        root.setGraphic(new Label(file.getName()));
+
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem newFile = new MenuItem("New File");
+        newFile.setOnAction(e -> {
+            try {
+                addFile(root, file);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        contextMenu.getItems().add(newFile);
+        root.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(root.getGraphic(), e.getScreenX(), e.getScreenY()));
+        fileTreeView.setRoot(root);
         for(File childFile : Objects.requireNonNull(file.listFiles())) {
             TreeItem<String> childItem = addChildItem(root, childFile);
             if(childFile.isDirectory()) displayFileStructure(childItem, childFile);
@@ -339,14 +344,14 @@ public class ApplicationController implements Initializable {
                         mainPyContent = "";
                     }
 
+                    assert mainPyContent != null;
                     if(mainPyContent.contains("bot.run(TOKEN)")) {
                         int lastIndexBotRun = mainPyContent.lastIndexOf("bot.run(TOKEN)");
 
                         String newMainPyContent = mainPyContent.substring(0, lastIndexBotRun) + content + mainPyContent.substring(lastIndexBotRun);
 
-                        BufferedWriter writer = null;
                         try {
-                            writer = new BufferedWriter(new FileWriter(mainPyFile));
+                            BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
                             writer.write(newMainPyContent);
                             writer.close();
                         } catch (IOException e) {
