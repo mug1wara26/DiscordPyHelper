@@ -66,8 +66,9 @@ public class Command {
     }
 
     public void moveParams(int beforeIndex, int afterIndex) {
-        params.add(afterIndex, params.get(beforeIndex));
-        params.remove(beforeIndex + 1);
+        String item = params.get(beforeIndex);
+        params.remove(item);
+        params.add(afterIndex, item);
     }
 
     public String getCommandDef() {
@@ -102,5 +103,9 @@ public class Command {
         commandDef.append("):");
 
         return commandDef.toString();
+    }
+
+    public String getName() {
+        return name;
     }
 }

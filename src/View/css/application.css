@@ -16,8 +16,8 @@
   -fx-stroke: white;
 }
 
-.lineno .text {
-  -fx-fill: black;
+.lineno {
+  -fx-background-color: "1f1f1f";
 }
 
 .context-menu {

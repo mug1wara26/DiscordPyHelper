@@ -63,37 +63,37 @@ public class GetBotInfoController implements Initializable {
 
     @FXML
     public void handleFinishBtn(ActionEvent e) throws IOException {
-        if(inputPrefixTF.getText().contains(" ")) {
-            Main.alert(Alert.AlertType.ERROR, "Prefix cannot contain spaces!");
-            return;
-        }
-
-
         boolean error = false;
         boolean safeDelete = true;
         botFolderPath = DEFAULT_PATH + "\\" + inputNameTF.getText();
 
         File botFolder = new File(botFolderPath);
+        if(botFolder.exists()) {
+            Main.alert(Alert.AlertType.ERROR, "Folder already exists!");
+            return;
+        }
+
+
         boolean result = botFolder.mkdir();
+        if(!result) {
+            Main.alert(Alert.AlertType.ERROR, "Could not make project folder");
+            return;
+        }
+
+
+        //ENV FILE CREATION
+        File envFile = new File(botFolderPath + "\\.env");
+        result = envFile.createNewFile();
         if(result) {
-            //ENV FILE CREATION
-            File envFile = new File(botFolderPath + "\\.env");
-            result = envFile.createNewFile();
-            if(result) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(envFile));
-                writer.write("DISCORD_TOKEN= \"" + inputTokenTF.getText() + "\"");
-                writer.close();
-            }
-            else {
-                Main.alert(Alert.AlertType.ERROR, "Could not make .env file", true);
-                error = true;
-                if(botFolder.exists()) safeDelete = false;
-            }
+            BufferedWriter writer = new BufferedWriter(new FileWriter(envFile));
+            writer.write("DISCORD_TOKEN= \"" + inputTokenTF.getText() + "\"");
+            writer.close();
         }
         else {
-            Main.alert(Alert.AlertType.ERROR, "Could not make directory", true);
+            Main.alert(Alert.AlertType.ERROR, "Could not make .env file", true);
             error = true;
         }
+
 
         //MAIN.PY FILE CREATION
         File mainPyFile = new File(botFolderPath + "\\" + "main.py");
@@ -155,6 +155,7 @@ public class GetBotInfoController implements Initializable {
 
         Runtime rt = Runtime.getRuntime();
         Process pr = rt.exec("python -m pip install -r \"" + requirementsFile.getAbsolutePath() + "\"");
+
 
         //Switch to application.fxml
         if(error) {

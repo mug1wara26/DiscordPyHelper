@@ -2,6 +2,7 @@ package Controllers;
 
 import Model.Command;
 import Model.Main;
+import Model.Messenger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -48,8 +49,6 @@ public class FinishAddCommandController implements Initializable {
 
     @FXML
     public void handleMoveParamPos(ActionEvent e) {
-        if(paramPosSpinner.getValue() == paramsCB.getItems().indexOf(paramsCB.getValue())) return;
-
         int beforeIndex = paramsCB.getItems().indexOf(paramsCB.getValue());
         int afterIndex = paramPosSpinner.getValue() - 1;
         command.moveParams(beforeIndex, afterIndex);
@@ -66,8 +65,10 @@ public class FinishAddCommandController implements Initializable {
     }
 
     @FXML
-    public void handleFinishBtn(ActionEvent e) {
+    public void handleFinishBtn(ActionEvent e) throws IOException {
+        ApplicationController applicationController = Messenger.getApplicationController();
 
+        applicationController.addCommand(command.getName(), command.getCommandDef());
 
         Stage stage = (Stage) commandDefLbl.getScene().getWindow();
         stage.close();

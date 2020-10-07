@@ -30,7 +30,6 @@
                         <MenuItem mnemonicParsing="false" onAction="#handleMenuSettings" text="Settings" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#handleMenuSave" text="Save" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleMenuSaveAs" text="Save As" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#handleMenuExit" text="Exit" />
                   </items>
@@ -51,7 +50,7 @@
             </MenuBar>
          </top>
          <center>
-            <VBox fx:id="codeAreaVBox" prefHeight="1055.0" prefWidth="1700.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="1055.0" prefWidth="1700.0" BorderPane.alignment="CENTER">
                <BorderPane.margin>
                   <Insets right="20.0" />
                </BorderPane.margin>

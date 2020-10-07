@@ -1,7 +1,9 @@
 package Controllers;
 
 import Model.Main;
-import Model.PythonSyntaxArea;
+import Model.Messenger;
+import Model.SyntaxArea;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,9 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.fxmisc.richtext.CodeArea;
@@ -24,8 +24,6 @@ import java.net.URL;
 import java.util.*;
 
 public class ApplicationController implements Initializable {
-    @FXML
-    private VBox codeAreaVBox;
     @FXML
     private TabPane commandsTabPane;
     @FXML
@@ -39,29 +37,34 @@ public class ApplicationController implements Initializable {
 
 
     private File lastFolderOpened = null;
+    final String BOT_FOLDER_PATH = GetBotInfoController.getBotFolderPath();
+    private TreeItem<String> commandDir;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Main.getStage().setMaximized(true);
 
+        //Set commandsTabPane in messenger class
+        Messenger.setApplicationController(this);
+
         //Display file structure
-        File projectFile = new File(GetBotInfoController.getBotFolderPath());
+        File projectFile = new File(BOT_FOLDER_PATH);
         TreeItem<String> rootItem = new TreeItem<>(projectFile.getName());
         fileTreeView.setRoot(rootItem);
 
 
-        displayFileStructure(rootItem, new File(GetBotInfoController.getBotFolderPath()));
+        displayFileStructure(rootItem, new File(BOT_FOLDER_PATH));
 
         //Setting up code area for main.py
         VBox mainPyVBox = new VBox();
-        CodeArea mainPyCA = new PythonSyntaxArea().getCodeArea();
-        mainPyCA.setPrefHeight(700);
+        CodeArea mainPyCA = new SyntaxArea().getCodeArea(true);
+        mainPyCA.setPrefHeight(Main.getStage().getHeight() * 0.6);
 
 
         String content = null;
         try {
-            content = new Scanner(new File(GetBotInfoController.getBotFolderPath() + "\\main.py")).useDelimiter("\\Z").next();
+            content = new Scanner(new File(BOT_FOLDER_PATH + "\\main.py")).useDelimiter("\\Z").next();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -81,12 +84,90 @@ public class ApplicationController implements Initializable {
 
     private void displayFileStructure(TreeItem<String> root, File file) {
         for(File childFile : Objects.requireNonNull(file.listFiles())) {
-            TreeItem<String> childItem = new TreeItem<>(childFile.getName());;
+            TreeItem<String> childItem = new TreeItem<>("");
+
+            childItem.setGraphic(new Label(childFile.getName()));
+
+            ContextMenu contextMenu = new ContextMenu();
+
+            //Check if child file is a directory
+            if(childFile.isDirectory()) {
+                Menu newFile = new Menu("+New");
+                MenuItem addFile = new MenuItem("New File");
+
+                addFile.setOnAction(e -> {
+                    // TODO: 10/7/2020  Create FXML file for new file
+                });
+                newFile.getItems().add(addFile);
+
+                //Check is child file is the commands folder, if it is add a new command menu item
+                if(childFile.getAbsolutePath().equals(GetBotInfoController.getBotFolderPath() + "\\commands")) {
+                    MenuItem addCommand = new MenuItem("New Command");
+
+                    addCommand.setOnAction(e -> {
+                        try {
+                            Parent p = FXMLLoader.load(getClass().getResource("/View/addCommand.fxml"));
+
+                            Stage stage = new Stage();
+                            stage.setTitle("Create Command");
+                            stage.setScene(new Scene(p, 640, 480));
+                            stage.show();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+                    newFile.getItems().add(addCommand);
+                }
+
+                contextMenu.getItems().add(newFile);
+                childItem.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(childItem.getGraphic(), e.getScreenX(), e.getScreenY()));
+            }
+
+
             if(childFile.isDirectory()) {
                 displayFileStructure(childItem, childFile);
             }
             root.getChildren().add(childItem);
         }
+    }
+
+    private void addChildItem(TreeItem<String> root, File file) {
+        TreeItem<String> childItem = new TreeItem<>("");
+        childItem.setGraphic(new Label(file.getName()));
+
+        ContextMenu contextMenu = new ContextMenu();
+        // TODO: 10/7/2020 Add menu items to context menu
+
+        childItem.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(childItem.getGraphic(), e.getScreenX(), e.getScreenY()));
+        root.getChildren().add(childItem);
+    }
+
+    private void addTab(String title, String content, boolean setIndent) {
+        Tab tab = new Tab();
+        tab.setText(title);
+        CodeArea codeArea = new SyntaxArea().getCodeArea(setIndent);
+        codeArea.setPrefHeight(Main.getStage().getHeight() * 0.6);
+        tab.setContent(codeArea);
+        codeArea.appendText(content);
+
+        commandsTabPane.getTabs().add(commandsTabPane.getTabs().size() - 1, tab);
+    }
+    private void addTab(String title) {
+        addTab(title, "", false);
+    }
+
+    public void addCommand(String name, String content) throws IOException {
+        String commandPath = GetBotInfoController.getBotFolderPath() + "\\commands";
+
+        File file = new File(commandPath + "\\" + name + ".txt");
+        if(file.exists()) {
+            Main.alert(AlertType.ERROR, "File already exists!");
+            return;
+        }
+
+        file.createNewFile();
+        addTab(name, content, true);
+        addChildItem(commandDir, file);
     }
 
 
@@ -98,25 +179,19 @@ public class ApplicationController implements Initializable {
         stage.setTitle("Create Command");
         stage.setScene(new Scene(root, 640, 480));
         stage.show();
-
-
     }
 
 
     //Method that saves the entire project
     private void save() {
-        save(GetBotInfoController.getBotFolderPath());
-    }
 
-    private void save(String folderPath) {
     }
 
     private boolean saveConfirmation() {
         Alert a = new Alert(AlertType.CONFIRMATION, "Do you want to save your project?", ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = a.showAndWait();
         if(result.get() == ButtonType.YES) save();
-        if(result.get() == ButtonType.YES || result.get() == ButtonType.NO) return true;
-        else return false;
+        return result.get() == ButtonType.NO;
     }
 
     //Handling Menu Bar Item: File
@@ -148,21 +223,12 @@ public class ApplicationController implements Initializable {
 
     @FXML
     public void handleMenuSave(ActionEvent e) {
-        save();
-    }
-
-    @FXML
-    public void handleMenuSaveAs(ActionEvent e) {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Choose Folder");
-
-        if(lastFolderOpened != null) directoryChooser.setInitialDirectory(lastFolderOpened);
-
-        File selectedFolder = directoryChooser.showDialog(null);
-        if(selectedFolder != null) {
-            lastFolderOpened = selectedFolder;
-            save(selectedFolder.getAbsolutePath());
-        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                save();
+            }
+        });
     }
 
     @FXML
