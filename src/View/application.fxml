@@ -53,7 +53,7 @@
                   <Insets right="20.0" />
                </BorderPane.margin>
                <children>
-                  <SplitPane dividerPositions="0.10063224446786091" prefHeight="820.0" prefWidth="1900.0">
+                  <SplitPane dividerPositions="0.10063224446786091" prefHeight="768.0" prefWidth="1900.0">
                      <items>
                         <TreeView fx:id="fileTreeView" prefHeight="200.0" prefWidth="200.0" />
                         <TabPane fx:id="commandsTabPane" prefHeight="1055.0" prefWidth="1700.0" tabClosingPolicy="ALL_TABS">
@@ -78,7 +78,10 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </SplitPane>
-                  <Button fx:id="runBtn" mnemonicParsing="false" onAction="#handleRunBtn" prefHeight="25.0" prefWidth="50.0" text="RUN" />
+                  <Button fx:id="runBtn" mnemonicParsing="false" onAction="#handleRunBtn" prefHeight="25.0" prefWidth="50.0" text="RUN">
+                     <VBox.margin>
+                        <Insets left="10.0" />
+                     </VBox.margin></Button>
                </children></VBox>
          </center>
       </BorderPane>
