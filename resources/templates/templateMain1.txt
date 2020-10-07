@@ -9,6 +9,8 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='%s')
 bot.remove_command("help")
 
+#Define variables and functions here
+
 @bot.event
 async def on_ready():
     print("Connected to discord!")
