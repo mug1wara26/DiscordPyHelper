@@ -12,13 +12,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" styleClass="background" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.FinishAddCommandController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.FinishAddCommandController">
 
    <children>
       <VBox layoutY="6.0" prefHeight="480.0" prefWidth="640.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="10.0">
          <children>
             <Label text="Your command definition looks like this:" />
-            <ScrollPane prefHeight="115.0" prefWidth="629.0">
+            <ScrollPane prefHeight="300.0" prefWidth="889.0">
                <content>
                   <Label fx:id="commandDefLbl" text="commandDefLbl" />
                </content>
@@ -56,7 +56,7 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#handleFinishBtn" text="Finish" />
+                  <Button fx:id="finishBtn" mnemonicParsing="false" onAction="#handleFinishBtn" text="Finish" />
                </children>
                <VBox.margin>
                   <Insets left="10.0" right="10.0" />

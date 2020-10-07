@@ -8,10 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -26,6 +23,8 @@ public class FinishAddCommandController implements Initializable {
     private ComboBox<String> paramsCB;
     @FXML
     private Spinner<Integer> paramPosSpinner;
+    @FXML
+    private Button finishBtn;
 
     private static Command command;
     private ArrayList<String> params;
@@ -66,6 +65,7 @@ public class FinishAddCommandController implements Initializable {
 
     @FXML
     public void handleFinishBtn(ActionEvent e) throws IOException {
+        finishBtn.setDisable(true);
         ApplicationController applicationController = Messenger.getApplicationController();
 
         applicationController.addCommand(command.getName(), command.getCommandDef());

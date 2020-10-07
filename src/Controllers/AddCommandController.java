@@ -736,10 +736,14 @@ public class AddCommandController implements Initializable {
         if(varKeywordArgName.equals("keywordArg")) command.setKeywordArg(true);
 
         command.addAllConverters(addedDiscordConvCB.getItems());
+        command.addAllErrHandlers(addedErrHandlerCB.getItems());
 
         FinishAddCommandController.setCommand(command);
 
         Parent root = FXMLLoader.load(Main.class.getResource("/View/finishAddCommand.fxml"));
+        cancelBtn.getScene().getWindow().setWidth(900);
+        cancelBtn.getScene().getWindow().setHeight(600);
+        cancelBtn.getScene().getWindow().centerOnScreen();
         cancelBtn.getScene().setRoot(root);
     }
 }

@@ -13,6 +13,7 @@ public class Command {
     private ArrayList<String> args;
     private ArrayList<String> converters;
     private ArrayList<String> params;
+    private ArrayList<String> errHandlers;
     private boolean checkAny;
     private boolean varArg;
     private boolean keywordArg;
@@ -23,12 +24,12 @@ public class Command {
         args = new ArrayList<>();
         converters = new ArrayList<>();
         params = new ArrayList<>();
+        errHandlers = new ArrayList<>();
     }
 
     public void setVarArg(boolean varArg) {
         this.varArg = varArg;
     }
-
     public void setKeywordArg(boolean keywordArg) {
         this.keywordArg = keywordArg;
     }
@@ -53,17 +54,19 @@ public class Command {
         }
     }
 
+    public void addAllErrHandlers(ObservableList<String> errHandlers) {
+        this.errHandlers.addAll(errHandlers);
+    }
+
     public void setCheckAny(boolean checkAny) {
         this.checkAny = checkAny;
     }
-
     public void setChecks(ArrayList<Check> checks) {
         this.checks = checks;
     }
 
-    public ArrayList<String> getParams() {
-        return params;
-    }
+
+    public ArrayList<String> getParams() { return params; }
 
     public void moveParams(int beforeIndex, int afterIndex) {
         String item = params.get(beforeIndex);
@@ -100,7 +103,20 @@ public class Command {
         if(varArg) commandDef.append(", *varArg");
         if(keywordArg) commandDef.append(", *, keywordArg");
 
-        commandDef.append("):");
+        commandDef.append("):\n    #Bot code goes here");
+
+        if(!errHandlers.isEmpty()) {
+            String errHandlerDef = "@" + name + ".error\n" +
+                                   "async def " + name + "_error(ctx, error):\n";
+            commandDef.append("\n\n").append(errHandlerDef);
+        }
+
+        for(String errHandler : errHandlers) {
+            String ifError = "    if isinstance(error, commands." + errHandler + "):\n" +
+                             "        #Error handling code goes here\n\n";
+
+            commandDef.append(ifError);
+        }
 
         return commandDef.toString();
     }
