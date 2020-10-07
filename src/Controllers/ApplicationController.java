@@ -50,7 +50,6 @@ public class ApplicationController implements Initializable {
 
 
     final String BOT_FOLDER_PATH = GetBotInfoController.getBotFolderPath();
-    private File lastFolderOpened = null;
     private TreeItem<String> commandDir;
     private List<File> requiredFiles = Arrays.asList(Objects.requireNonNull(new File(BOT_FOLDER_PATH).listFiles()));
 
@@ -65,7 +64,20 @@ public class ApplicationController implements Initializable {
 
         //Display file structure
         File projectFile = new File(BOT_FOLDER_PATH);
-        TreeItem<String> rootItem = new TreeItem<>(projectFile.getName());
+        TreeItem<String> rootItem = new TreeItem<>("");
+        rootItem.setGraphic(new Label(projectFile.getName()));
+
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem newFile = new MenuItem("New File");
+        newFile.setOnAction(e -> {
+            try {
+                addFile(rootItem, projectFile);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        contextMenu.getItems().add(newFile);
+        rootItem.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(rootItem.getGraphic(), e.getScreenX(), e.getScreenY()));
         fileTreeView.setRoot(rootItem);
 
         displayFileStructure(rootItem, new File(BOT_FOLDER_PATH));
@@ -81,6 +93,8 @@ public class ApplicationController implements Initializable {
             content = new Scanner(mainPyFile).useDelimiter("\\Z").next();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (NoSuchElementException e) {
+            content = "";
         }
         mainPyCA.appendText(content);
 
@@ -97,104 +111,91 @@ public class ApplicationController implements Initializable {
         addBtn.setTooltip(tooltip);
 
         addBtnTab.setDisable(true);
-
-
     }
 
     private void displayFileStructure(TreeItem<String> root, File file) {
         for(File childFile : Objects.requireNonNull(file.listFiles())) {
-            TreeItem<String> childItem = new TreeItem<>("");
-            if(childFile.getName().endsWith(".DPH")) childItem.setGraphic(new Label(childFile.getName().substring(0, childFile.getName().length() - 4)));
-            else childItem.setGraphic(new Label(childFile.getName()));
-
-            ContextMenu contextMenu = new ContextMenu();
-
-            //Check if child file is a directory
-            if(childFile.isDirectory()) {
-                Menu newFile = new Menu("+New");
-                MenuItem addFile = new MenuItem("New File");
-
-                addFile.setOnAction(e -> {
-                    // TODO: 10/7/2020  Create FXML file for new file
-                });
-                newFile.getItems().add(addFile);
-                contextMenu.getItems().add(newFile);
-
-                //Check is child file is the commands folder, if it is add a new command menu item
-                if(childFile.getAbsolutePath().equals(GetBotInfoController.getBotFolderPath() + "\\commands")) {
-                    commandDir = childItem;
-                    MenuItem addCommand = new MenuItem("New Command");
-
-                    addCommand.setOnAction(e -> {
-                        try {
-                            Parent p = FXMLLoader.load(getClass().getResource("/View/addCommand.fxml"));
-
-                            Stage stage = new Stage();
-                            stage.setTitle("Create Command");
-                            stage.setScene(new Scene(p, 640, 480));
-                            stage.show();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    });
-                    newFile.getItems().add(addCommand);
-                }
-
-
-                displayFileStructure(childItem, childFile);
-            }
-            else if(childFile.isFile()) {
-                childItem.getGraphic().addEventHandler(MouseEvent.MOUSE_CLICKED, me -> {
-                    if(me.getButton().equals(MouseButton.PRIMARY)) {
-                        Label childItemLabel = (Label) childItem.getGraphic();
-                        if(childFile.getName().endsWith(".DPH") || childFile.getName().endsWith(".py")) addTab(childItemLabel.getText(), true, childFile);
-                        else addTab(childItemLabel.getText(), false, childFile);
-                    }
-                });
-
-                //Adding context menu
-                MenuItem save = new MenuItem("Save");
-                save.setOnAction(e -> {
-                    for(Tab tab : commandsTabPane.getTabs().subList(0, commandsTabPane.getTabs().size() - 1)) {
-                        if(tab.getTooltip().getText().equals(childFile.getAbsolutePath())) {
-                            save(tab);
-                        }
-                    }
-                });
-                contextMenu.getItems().add(save);
-
-                if(!requiredFiles.contains(childFile)) {
-                    MenuItem delete = new MenuItem("Delete");
-                    delete.setOnAction(e -> {
-
-                    });
-                }
-            }
-
-            childItem.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(childItem.getGraphic(), e.getScreenX(), e.getScreenY()));
-            root.getChildren().add(childItem);
+            TreeItem<String> childItem = addChildItem(root, childFile);
+            if(childFile.isDirectory()) displayFileStructure(childItem, childFile);
         }
     }
 
-    private void addChildItem(TreeItem<String> root, File file) {
+    public TreeItem<String> addChildItem(TreeItem<String> root, File childFile) {
         TreeItem<String> childItem = new TreeItem<>("");
-        if(file.getName().endsWith(".DPH")) childItem.setGraphic(new Label(file.getName().substring(0, file.getName().length() - 4)));
-        else childItem.setGraphic(new Label(file.getName()));
+        if(childFile.getName().endsWith(".DPH")) childItem.setGraphic(new Label(childFile.getName().substring(0, childFile.getName().length() - 4)));
+        else childItem.setGraphic(new Label(childFile.getName()));
 
         ContextMenu contextMenu = new ContextMenu();
-        // TODO: 10/7/2020 Add menu items to context menu
+
+        //Check if child file is a directory
+        if(childFile.isDirectory()) {
+            Menu newFile = new Menu("+New");
+            MenuItem addFile = new MenuItem("New File");
+
+            addFile.setOnAction(e -> {
+                try {
+                    addFile(childItem, childFile);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+            newFile.getItems().add(addFile);
+            contextMenu.getItems().add(newFile);
+
+            //Check is child file is the commands folder, if it is add a new command menu item
+            if(childFile.getAbsolutePath().equals(GetBotInfoController.getBotFolderPath() + "\\commands")) {
+                commandDir = childItem;
+                MenuItem addCommand = new MenuItem("New Command");
+
+                addCommand.setOnAction(e -> {
+                    try {
+                        Parent p = FXMLLoader.load(getClass().getResource("/View/addCommand.fxml"));
+
+                        Stage stage = new Stage();
+                        stage.setTitle("Create Command");
+                        stage.setScene(new Scene(p, 640, 480));
+                        stage.show();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+                newFile.getItems().add(addCommand);
+            }
+
+
+            displayFileStructure(childItem, childFile);
+        }
+        else if(childFile.isFile()) {
+            childItem.getGraphic().addEventHandler(MouseEvent.MOUSE_CLICKED, me -> {
+                if(me.getButton().equals(MouseButton.PRIMARY)) {
+                    Label childItemLabel = (Label) childItem.getGraphic();
+                    if(childFile.getName().endsWith(".DPH") || childFile.getName().endsWith(".py")) addTab(childItemLabel.getText(), true, childFile);
+                    else addTab(childItemLabel.getText(), false, childFile);
+                }
+            });
+
+            //Adding context menu
+            MenuItem save = new MenuItem("Save");
+            save.setOnAction(e -> {
+                for(Tab tab : commandsTabPane.getTabs().subList(0, commandsTabPane.getTabs().size() - 1)) {
+                    if(tab.getTooltip().getText().equals(childFile.getAbsolutePath())) {
+                        save(tab);
+                    }
+                }
+            });
+            contextMenu.getItems().add(save);
+
+            if(!requiredFiles.contains(childFile)) {
+                MenuItem delete = new MenuItem("Delete");
+                delete.setOnAction(e -> {
+
+                });
+            }
+        }
 
         childItem.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(childItem.getGraphic(), e.getScreenX(), e.getScreenY()));
-
-        childItem.getGraphic().addEventHandler(MouseEvent.MOUSE_CLICKED, me -> {
-            if(me.getButton().equals(MouseButton.PRIMARY)) {
-                Label childItemLabel = (Label) childItem.getGraphic();
-                if(file.getName().endsWith(".DPH") || file.getName().endsWith(".py")) addTab(childItemLabel.getText(), true, file);
-                else addTab(childItemLabel.getText(), false, file);
-            }
-        });
-
         root.getChildren().add(childItem);
+        return childItem;
     }
 
     private void addTab(String title, boolean setIndent, File file) {
@@ -212,21 +213,27 @@ public class ApplicationController implements Initializable {
         tab.setText(title);
 
         tab.setOnCloseRequest(e -> {
+            String fileContent = null;
             try {
-                String fileContent = new Scanner(file).useDelimiter("\\Z").next();
-                String tabContent = getCodeArea(tab).getText();
-
-                if(fileContent.equals(tabContent)) commandsTabPane.getTabs().remove(tab);
-                else {
-                    int index = commandsTabPane.getTabs().indexOf(tab);
-                    ButtonType buttonType = confirmation("Do you want to save this file before closing?");
-
-                    if(buttonType.equals(ButtonType.YES)) save(tab);
-                    commandsTabPane.getTabs().remove(tab);
-
-                }
-            } catch (FileNotFoundException ex) {
+                fileContent = new Scanner(file).useDelimiter("\\Z").next();
+            }
+            catch (FileNotFoundException ex) {
                 ex.printStackTrace();
+            }
+            catch (NoSuchElementException ex) {
+                fileContent = "";
+            }
+
+            String tabContent = getCodeArea(tab).getText();
+
+            if(fileContent.equals(tabContent)) commandsTabPane.getTabs().remove(tab);
+            else {
+                int index = commandsTabPane.getTabs().indexOf(tab);
+                ButtonType buttonType = confirmation("Do you want to save this file before closing?");
+
+                if(buttonType.equals(ButtonType.YES)) save(tab);
+                commandsTabPane.getTabs().remove(tab);
+
             }
         });
 
@@ -243,8 +250,12 @@ public class ApplicationController implements Initializable {
         String content = null;
         try {
             content = new Scanner(file).useDelimiter("\\Z").next();
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException e) {
             e.printStackTrace();
+        }
+        catch (NoSuchElementException e) {
+            content = "";
         }
 
         tab.setContent(vBox);
@@ -317,26 +328,32 @@ public class ApplicationController implements Initializable {
 
 
                     File mainPyFile = new File(BOT_FOLDER_PATH + "\\main.py");
+                    String mainPyContent = null;
                     try {
-                        String mainPyContent =  new Scanner(mainPyFile).useDelimiter("\\Z").next();
-                        if(mainPyContent.contains("bot.run(TOKEN)")) {
-                            int lastIndexBotRun = mainPyContent.lastIndexOf("bot.run(TOKEN)");
+                        mainPyContent =  new Scanner(mainPyFile).useDelimiter("\\Z").next();
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    catch (NoSuchElementException e) {
+                        mainPyContent = "";
+                    }
 
-                            String newMainPyContent = mainPyContent.substring(0, lastIndexBotRun) + content + mainPyContent.substring(lastIndexBotRun);
+                    if(mainPyContent.contains("bot.run(TOKEN)")) {
+                        int lastIndexBotRun = mainPyContent.lastIndexOf("bot.run(TOKEN)");
 
-                            BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
-                            writer.write(newMainPyContent);
-                            writer.close();
+                        String newMainPyContent = mainPyContent.substring(0, lastIndexBotRun) + content + mainPyContent.substring(lastIndexBotRun);
 
-                            for(Tab commandsTab : commandsTabPane.getTabs().subList(0, commandsTabPane.getTabs().size() - 1)) {
-                                if(commandsTab.getTooltip().getText().equals(mainPyFile.getAbsolutePath())) {
-                                    CodeArea mainPyCA = getCodeArea(commandsTab);
-                                    mainPyCA.replaceText(newMainPyContent);
-                                }
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
+                        writer.write(newMainPyContent);
+                        writer.close();
+
+                        for(Tab commandsTab : commandsTabPane.getTabs().subList(0, commandsTabPane.getTabs().size() - 1)) {
+                            if(commandsTab.getTooltip().getText().equals(mainPyFile.getAbsolutePath())) {
+                                CodeArea mainPyCA = getCodeArea(commandsTab);
+                                mainPyCA.replaceText(newMainPyContent);
                             }
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
                 }
 
@@ -399,5 +416,26 @@ public class ApplicationController implements Initializable {
         StringSelection selection = new StringSelection(BOT_FOLDER_PATH);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
+    }
+
+    @FXML
+    public void handleRunBtn(ActionEvent e) {
+        try {
+            Runtime.getRuntime().exec("cmd /c start cmd.exe /K \"cd " + BOT_FOLDER_PATH + "&& python main.py" + "\"");
+        }
+        catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+
+    private void addFile(TreeItem<String> rootTreeItem, File file) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/View/addFile.fxml"));
+
+        AddFileController.setFile(file);
+        Messenger.setRoot(rootTreeItem);
+        Stage stage = new Stage();
+        stage.setTitle("Create File");
+        stage.setScene(new Scene(root, 320, 240));
+        stage.showAndWait();
     }
 }

@@ -13,7 +13,6 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ApplicationController">
@@ -79,19 +78,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </SplitPane>
-                  <HBox fx:id="outputHBox" prefHeight="224.0" prefWidth="1900.0">
-                     <children>
-                        <VBox prefHeight="224.0" prefWidth="50.0">
-                           <children>
-                              <Button fx:id="runBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="RUN" />
-                              <Button fx:id="stopBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="STOP" />
-                           </children>
-                        </VBox>
-                     </children>
-                     <VBox.margin>
-                        <Insets left="10.0" />
-                     </VBox.margin>
-                  </HBox>
+                  <Button fx:id="runBtn" mnemonicParsing="false" onAction="#handleRunBtn" prefHeight="25.0" prefWidth="50.0" text="RUN" />
                </children></VBox>
          </center>
       </BorderPane>

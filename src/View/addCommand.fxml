@@ -21,10 +21,10 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" styleClass="background" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AddCommandController">
 
-    <stylesheets>
-        <URL value="@css/main.css" />
-        <URL value="@css/addCommand.css" />
-    </stylesheets>
+   <stylesheets>
+      <URL value="@css/main.css" />
+      <URL value="@css/addCommand.css" />
+   </stylesheets>
    <children>
       <VBox layoutX="71.0" layoutY="26.0" prefHeight="480.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -58,8 +58,8 @@
                </VBox.margin>
                <tabs>
                   <Tab text="Arguments">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
                               <VBox layoutX="199.0" layoutY="-17.0" prefHeight="341.0" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                                  <children>
@@ -144,11 +144,11 @@
                               <Separator layoutX="160.0" orientation="VERTICAL" prefHeight="350.0" prefWidth="0.0" />
                            </children>
                         </AnchorPane>
-                    </content>
+                     </content>
                   </Tab>
                   <Tab text="Converters">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
                               <VBox layoutX="177.0" layoutY="63.0" prefHeight="341.0" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                                  <children>
@@ -204,11 +204,11 @@
                                  </children>
                               </VBox>
                            </children></AnchorPane>
-                    </content>
+                     </content>
                   </Tab>
                   <Tab text="Error Handlers">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
                               <VBox prefHeight="341.0" prefWidth="150.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                                  <children>
@@ -254,11 +254,11 @@
                                  </children>
                               </VBox>
                            </children></AnchorPane>
-                    </content>
+                     </content>
                   </Tab>
                   <Tab text="Checks">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
                               <Separator layoutX="160.0" orientation="VERTICAL" prefHeight="350.0" />
                               <HBox fx:id="haveChecksHBox" layoutX="182.0" layoutY="-1.0" prefHeight="351.0" prefWidth="448.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
@@ -311,7 +311,7 @@
                                  </children>
                               </VBox>
                            </children></AnchorPane>
-                    </content>
+                     </content>
                   </Tab>
                </tabs>
             </TabPane>
