@@ -95,7 +95,7 @@ public class InitializeController implements Initializable {
         if(lastFolderOpened != null) directoryChooser.setInitialDirectory(lastFolderOpened);
 
         File selectedFolder = directoryChooser.showDialog(null);
-        if(selectedFolder != null && prefs.get(INIT_PATH_KEY, null) == selectedFolder.getParentFile().getAbsolutePath()) {
+        if(selectedFolder != null && prefs.get(INIT_PATH_KEY, null).equals(selectedFolder.getParentFile().getAbsolutePath())) {
             lastFolderOpened = selectedFolder;
             TreeItem<String> root = new TreeItem<>("");
 
