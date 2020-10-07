@@ -332,7 +332,7 @@ public class ApplicationController implements Initializable {
                     try {
                         mainPyContent =  new Scanner(mainPyFile).useDelimiter("\\Z").next();
                     }
-                    catch (IOException e) {
+                    catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
                     catch (NoSuchElementException e) {
@@ -344,9 +344,14 @@ public class ApplicationController implements Initializable {
 
                         String newMainPyContent = mainPyContent.substring(0, lastIndexBotRun) + content + mainPyContent.substring(lastIndexBotRun);
 
-                        BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
-                        writer.write(newMainPyContent);
-                        writer.close();
+                        BufferedWriter writer = null;
+                        try {
+                            writer = new BufferedWriter(new FileWriter(mainPyFile));
+                            writer.write(newMainPyContent);
+                            writer.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
                         for(Tab commandsTab : commandsTabPane.getTabs().subList(0, commandsTabPane.getTabs().size() - 1)) {
                             if(commandsTab.getTooltip().getText().equals(mainPyFile.getAbsolutePath())) {
