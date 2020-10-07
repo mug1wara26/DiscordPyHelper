@@ -171,6 +171,5 @@ public class GetBotInfoController implements Initializable {
     @FXML
     public void handlePreviousBtn(ActionEvent e) throws IOException {
         Main.changeScene("/View/Initialize.fxml");
-        Messenger.getApplicationController().setBOT_FOLDER_PATH(GetBotInfoController.getBotFolderPath());
     }
 }

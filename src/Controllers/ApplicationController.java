@@ -20,6 +20,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.fxmisc.richtext.CodeArea;
@@ -43,21 +44,18 @@ public class ApplicationController implements Initializable {
     private Tab mainPyTab;
     @FXML
     private TreeView<String> fileTreeView;
-    @FXML
-    private VBox rootVBox;
-    @FXML
-    private HBox outputHBox;
 
 
-    String BOT_FOLDER_PATH = null;
+    private static String BOT_FOLDER_PATH = null;
+    private static List<File> requiredFiles = null;
     private TreeItem<String> commandDir;
-    private List<File> requiredFiles = null;
+    private TreeItem<String> rootItem;
+    private File lastFolderOpened = null;
 
-    public void setBOT_FOLDER_PATH(String bot_folder_path) {
-        BOT_FOLDER_PATH = bot_folder_path;
+    public void setBOT_FOLDER_PATH(String BOT_FOLDER_PATH) {
+        ApplicationController.BOT_FOLDER_PATH = BOT_FOLDER_PATH;
         requiredFiles = Arrays.asList(Objects.requireNonNull(new File(BOT_FOLDER_PATH).listFiles()));
     }
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -68,10 +66,15 @@ public class ApplicationController implements Initializable {
         commandsTabPane.setPrefHeight(Main.getStage().getHeight() * 0.6);
 
         //Display file structure
+        if(BOT_FOLDER_PATH == null) {
+            if (GetBotInfoController.getBotFolderPath() != null) setBOT_FOLDER_PATH(GetBotInfoController.getBotFolderPath());
+            if (InitializeController.getBotFolderPath() != null) setBOT_FOLDER_PATH(InitializeController.getBotFolderPath());
+        }
         File projectFile = new File(BOT_FOLDER_PATH);
-        TreeItem<String> rootItem = new TreeItem<>("");
+        rootItem = new TreeItem<>("");
 
-        displayFileStructure(rootItem, new File(BOT_FOLDER_PATH));
+        displayFileStructure(rootItem, projectFile);
+        fileTreeView.setRoot(rootItem);
 
         //Setting up code area for main.py
         VBox mainPyVBox = new VBox();
@@ -105,20 +108,22 @@ public class ApplicationController implements Initializable {
     }
 
     public void displayFileStructure(TreeItem<String> root, File file) {
-        root.setGraphic(new Label(file.getName()));
+        if(root.equals(rootItem)) {
+            root.setGraphic(new Label(file.getName()));
 
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem newFile = new MenuItem("New File");
-        newFile.setOnAction(e -> {
-            try {
-                addFile(root, file);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
-        contextMenu.getItems().add(newFile);
-        root.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(root.getGraphic(), e.getScreenX(), e.getScreenY()));
-        fileTreeView.setRoot(root);
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem newFile = new MenuItem("New File");
+            newFile.setOnAction(e -> {
+                try {
+                    addFile(root, file);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+            contextMenu.getItems().add(newFile);
+            root.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(root.getGraphic(), e.getScreenX(), e.getScreenY()));
+        }
+
         for(File childFile : Objects.requireNonNull(file.listFiles())) {
             TreeItem<String> childItem = addChildItem(root, childFile);
             if(childFile.isDirectory()) displayFileStructure(childItem, childFile);
@@ -166,9 +171,6 @@ public class ApplicationController implements Initializable {
                 });
                 newFile.getItems().add(addCommand);
             }
-
-
-            displayFileStructure(childItem, childFile);
         }
         else if(childFile.isFile()) {
             childItem.getGraphic().addEventHandler(MouseEvent.MOUSE_CLICKED, me -> {
@@ -390,7 +392,26 @@ public class ApplicationController implements Initializable {
     }
 
     @FXML
-    public void handleMenuOpen(ActionEvent e) {
+    public void handleMenuOpen(ActionEvent e) throws IOException {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Open");
+        if(lastFolderOpened != null) directoryChooser.setInitialDirectory(lastFolderOpened);
+
+
+        File selectedFolder = directoryChooser.showDialog(null);
+        if(selectedFolder != null && new File(BOT_FOLDER_PATH).getParentFile().equals(selectedFolder.getParentFile())) {
+            lastFolderOpened = selectedFolder;
+
+            setBOT_FOLDER_PATH(selectedFolder.getAbsolutePath());
+
+            Main.getStage().close();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/View/application.fxml"));
+            Parent root = fxmlLoader.load();
+            Main.getStage().setScene(new Scene(root));
+            Main.getStage().show();
+
+        }
+        else Main.alert(AlertType.ERROR, "Project must be in default directory!");
     }
 
     @FXML
@@ -400,6 +421,7 @@ public class ApplicationController implements Initializable {
 
         Main.getScene().getWindow().setHeight(480);
         Main.getScene().getWindow().setWidth(640);
+        Main.getScene().getWindow().centerOnScreen();
         Main.changeScene("/View/initialize.fxml");
     }
 

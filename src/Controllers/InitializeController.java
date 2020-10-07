@@ -36,9 +36,14 @@ public class InitializeController implements Initializable {
 
     private final Font TITLEFONT = Font.loadFont("file:resources/fonts/PatrickHand-Regular.ttf", 30);
     private File lastFolderOpened = null;
+    public static String botFolderPath = null;
 
     final String INIT_PATH_KEY = "initPath";
     Preferences prefs = Preferences.userNodeForPackage(getClass());
+
+    public static String getBotFolderPath() {
+        return botFolderPath;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -97,11 +102,10 @@ public class InitializeController implements Initializable {
         File selectedFolder = directoryChooser.showDialog(null);
         if(selectedFolder != null && prefs.get(INIT_PATH_KEY, null).equals(selectedFolder.getParentFile().getAbsolutePath())) {
             lastFolderOpened = selectedFolder;
-            TreeItem<String> root = new TreeItem<>("");
 
-            Main.changeScene("/View/Application.fxml");
-            Messenger.getApplicationController().setBOT_FOLDER_PATH(selectedFolder.getAbsolutePath());
-            Messenger.getApplicationController().displayFileStructure(root, selectedFolder);
+            botFolderPath = selectedFolder.getAbsolutePath();
+            Main.changeScene("/View/application.fxml");
         }
+        else Main.alert(AlertType.ERROR, "Project must be in default directory!");
     }
 }
