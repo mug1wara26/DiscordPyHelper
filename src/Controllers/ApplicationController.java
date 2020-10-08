@@ -47,7 +47,7 @@ public class ApplicationController implements Initializable {
 
 
     private static String BOT_FOLDER_PATH = null;
-    private static List<File> requiredFiles = null;
+    private static List<File> requiredFiles = new ArrayList<>();
     private TreeItem<String> commandDir;
     private TreeItem<String> rootItem;
     private File lastFolderOpened = null;
@@ -61,6 +61,7 @@ public class ApplicationController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Messenger.setApplicationController(this);
         Main.getStage().setMaximized(true);
+
 
         //Set commandsTabPane in messenger class
         commandsTabPane.setPrefHeight(Main.getStage().getHeight() * 0.6);
@@ -105,6 +106,13 @@ public class ApplicationController implements Initializable {
         addBtn.setTooltip(tooltip);
 
         addBtnTab.setDisable(true);
+
+        //Setting up required files
+        requiredFiles.add(new File(BOT_FOLDER_PATH + "\\main.py"));
+        requiredFiles.add(new File(BOT_FOLDER_PATH + "\\tempMain.py"));
+        requiredFiles.add(new File(BOT_FOLDER_PATH + "\\commands"));
+        requiredFiles.add(new File(BOT_FOLDER_PATH + "\\.env"));
+        requiredFiles.add(new File(BOT_FOLDER_PATH + "\\requirements.txt"));
     }
 
     public void displayFileStructure(TreeItem<String> root, File file) {
@@ -191,13 +199,16 @@ public class ApplicationController implements Initializable {
                 }
             });
             contextMenu.getItems().add(save);
+        }
 
-            if(!requiredFiles.contains(childFile)) {
-                MenuItem delete = new MenuItem("Delete");
-                delete.setOnAction(e -> {
+        if(requiredFiles.contains(childFile)) {
+            MenuItem delete = new MenuItem("Delete");
+            delete.setOnAction(e -> {
 
-                });
-            }
+                Alert a = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this file?", ButtonType.YES, ButtonType.NO);
+                Optional<ButtonType> result = a.showAndWait();
+                if(result.get().equals(ButtonType.YES)) childFile.delete();
+            });
         }
 
         childItem.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(childItem.getGraphic(), e.getScreenX(), e.getScreenY()));
@@ -287,8 +298,6 @@ public class ApplicationController implements Initializable {
         out.write(content);
         out.close();
 
-        appendCommandText(content);
-
         addTab(command.getName(), true, file);
         addChildItem(commandDir, file);
     }
@@ -345,46 +354,40 @@ public class ApplicationController implements Initializable {
                     writer.write(codeArea.getText());
                     writer.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Main.alert(AlertType.ERROR, "Error in saving file :(");
                 }
-
-
-                if(tab.getTooltip().getText().endsWith(".DPH")) {
-                    String content = codeArea.getText();
-                    appendCommandText(content);
-                }
-
             }
         });
     }
 
-    private void appendCommandText(String content) {
+    @FXML
+    private void handleCompileCommands(ActionEvent event) {
         //Getting contents of tempMain.py
         File tempPyFile = new File(BOT_FOLDER_PATH + "\\tempMain.py");
         String tempMainContent =  getFileContents(tempPyFile);
 
         String newMainPyContent;
-        if(tempMainContent.contains("bot.run(TOKEN)")) {
-            int lastIndexBotRun = tempMainContent.lastIndexOf("bot.run(TOKEN)");
-            newMainPyContent = tempMainContent.substring(0, lastIndexBotRun) + content + "\n\n" +tempMainContent.substring(lastIndexBotRun);
-        }
-        else {
-            newMainPyContent = tempMainContent + content + "\n\nbot.run(TOKEN)";
-        }
+        String content;
+        for(File file : Objects.requireNonNull(new File(BOT_FOLDER_PATH + "\\commands").listFiles())) {
+            if (file.getName().endsWith(".DPH")) {
+                content = getFileContents(file);
+                //Adding command to newMainPyContent
+                if (tempMainContent.contains("bot.run(TOKEN)")) {
+                    int lastIndexBotRun = tempMainContent.lastIndexOf("bot.run(TOKEN)");
+                    newMainPyContent = tempMainContent.substring(0, lastIndexBotRun) + content + "\n\n" + tempMainContent.substring(lastIndexBotRun);
+                } else {
+                    newMainPyContent = tempMainContent + content + "\n\nbot.run(TOKEN)";
+                }
 
-        File mainPyFile = new File(BOT_FOLDER_PATH + "\\main.py");
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
-            writer.write(newMainPyContent);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        for(Tab commandsTab : commandsTabPane.getTabs().subList(0, commandsTabPane.getTabs().size() - 1)) {
-            if(commandsTab.getTooltip().getText().equals(mainPyFile.getAbsolutePath())) {
-                CodeArea mainPyCA = getCodeArea(commandsTab);
-                mainPyCA.replaceText(newMainPyContent);
+                //Appending command to main.py
+                File mainPyFile = new File(BOT_FOLDER_PATH + "\\main.py");
+                try {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
+                    writer.write(newMainPyContent);
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

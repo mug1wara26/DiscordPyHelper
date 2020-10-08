@@ -78,9 +78,14 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </SplitPane>
-                  <Button fx:id="runBtn" mnemonicParsing="false" onAction="#handleRunBtn" prefHeight="25.0" prefWidth="50.0" text="RUN">
+                  <Button mnemonicParsing="false" onAction="#handleCompileCommands" text="Compile commands">
                      <VBox.margin>
                         <Insets left="10.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button fx:id="runBtn" mnemonicParsing="false" onAction="#handleRunBtn" prefHeight="25.0" prefWidth="124.0" text="Run Bot">
+                     <VBox.margin>
+                        <Insets left="10.0" top="10.0" />
                      </VBox.margin></Button>
                </children></VBox>
          </center>

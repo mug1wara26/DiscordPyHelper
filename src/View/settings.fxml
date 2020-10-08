@@ -35,7 +35,7 @@
                <children>
                   <HBox alignment="CENTER_RIGHT" prefHeight="27.0" prefWidth="200.0">
                      <children>
-                        <Button fx:id="doneBtn" mnemonicParsing="false" onAction="#handleDoneBtn" prefHeight="27.0" prefWidth="50.0" text="Done" />
+                        <Button fx:id="doneBtn" disable="true" mnemonicParsing="false" onAction="#handleDoneBtn" prefHeight="27.0" prefWidth="50.0" text="Done" />
                      </children>
                   </HBox>
                </children>
