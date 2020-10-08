@@ -68,7 +68,7 @@ public class FinishAddCommandController implements Initializable {
         finishBtn.setDisable(true);
         ApplicationController applicationController = Messenger.getApplicationController();
 
-        applicationController.addCommand(command.getName(), command.getCommandDef());
+        applicationController.addCommand(command);
 
         Stage stage = (Stage) commandDefLbl.getScene().getWindow();
         stage.close();

@@ -1,5 +1,6 @@
 package Controllers;
 
+import Model.Command;
 import Model.Main;
 import Model.Messenger;
 import Model.SyntaxArea;
@@ -18,7 +19,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -82,7 +82,7 @@ public class ApplicationController implements Initializable {
         mainPyCA.setPrefHeight(commandsTabPane.getPrefHeight());
 
         String content = null;
-        File mainPyFile = new File(BOT_FOLDER_PATH + "\\main.py");
+        File mainPyFile = new File(BOT_FOLDER_PATH + "\\tempMain.py");
         try {
             content = new Scanner(mainPyFile).useDelimiter("\\Z").next();
         } catch (FileNotFoundException e) {
@@ -219,31 +219,6 @@ public class ApplicationController implements Initializable {
         Tab tab = new Tab();
         tab.setText(title);
 
-        tab.setOnCloseRequest(e -> {
-            String fileContent = null;
-            try {
-                fileContent = new Scanner(file).useDelimiter("\\Z").next();
-            }
-            catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-            catch (NoSuchElementException ex) {
-                fileContent = "";
-            }
-
-            String tabContent = getCodeArea(tab).getText();
-
-            if(fileContent.equals(tabContent)) commandsTabPane.getTabs().remove(tab);
-            else {
-                int index = commandsTabPane.getTabs().indexOf(tab);
-                ButtonType buttonType = confirmation("Do you want to save this file before closing?");
-
-                if(buttonType.equals(ButtonType.YES)) save(tab);
-                commandsTabPane.getTabs().remove(tab);
-
-            }
-        });
-
         Tooltip tooltip = new Tooltip(file.getAbsolutePath());
         tooltip.setShowDelay(Duration.seconds(0.3));
         tab.setTooltip(tooltip);
@@ -252,6 +227,30 @@ public class ApplicationController implements Initializable {
         CodeArea codeArea = new SyntaxArea().getCodeArea(setIndent);
         codeArea.setPrefHeight(commandsTabPane.getPrefHeight());
         vBox.getChildren().add(codeArea);
+
+
+        if(file.equals(new File(BOT_FOLDER_PATH + "\\main.py"))) {
+            codeArea.setEditable(false);
+        }
+        tab.setOnCloseRequest(e -> {
+            String fileContent = null;
+            try {
+                fileContent = new Scanner(file).useDelimiter("\\Z").next();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (NoSuchElementException ex) {
+                fileContent = "";
+            }
+
+            String tabContent = getCodeArea(tab).getText();
+
+            if (!fileContent.equals(tabContent)) {
+                ButtonType buttonType = confirmation("Do you want to save this file before closing?");
+
+                if (buttonType.equals(ButtonType.YES)) save(tab);
+            }
+            commandsTabPane.getTabs().remove(tab);
+        });
 
 
         String content = null;
@@ -272,7 +271,9 @@ public class ApplicationController implements Initializable {
         commandsTabPane.getSelectionModel().select(tab);
     }
 
-    public void addCommand(String name, String content) throws IOException {
+    public void addCommand(Command command) throws IOException {
+        String name = command.getName();
+        String content = command.getCommandDef();
         String commandPath = GetBotInfoController.getBotFolderPath() + "\\commands";
 
         File file = new File(commandPath + "\\" + name + ".DPH");
@@ -286,7 +287,9 @@ public class ApplicationController implements Initializable {
         out.write(content);
         out.close();
 
-        addTab(name, true, file);
+        appendCommandText(content);
+
+        addTab(command.getName(), true, file);
         addChildItem(commandDir, file);
     }
 
@@ -305,6 +308,22 @@ public class ApplicationController implements Initializable {
     private CodeArea getCodeArea(Tab tab) {
         VBox vBox = (VBox)tab.getContent();
         return (CodeArea) vBox.getChildren().get(0);
+    }
+
+    private String getFileContents(File file) {
+
+        String content = null;
+        try {
+            content =  new Scanner(file).useDelimiter("\\Z").next();
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (NoSuchElementException e) {
+            content = "";
+        }
+
+        return content;
     }
 
     //Method that saves the entire project
@@ -332,46 +351,42 @@ public class ApplicationController implements Initializable {
 
                 if(tab.getTooltip().getText().endsWith(".DPH")) {
                     String content = codeArea.getText();
-
-
-                    File mainPyFile = new File(BOT_FOLDER_PATH + "\\main.py");
-                    String mainPyContent = null;
-                    try {
-                        mainPyContent =  new Scanner(mainPyFile).useDelimiter("\\Z").next();
-                    }
-                    catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    catch (NoSuchElementException e) {
-                        mainPyContent = "";
-                    }
-
-                    assert mainPyContent != null;
-                    if(mainPyContent.contains("bot.run(TOKEN)")) {
-                        int lastIndexBotRun = mainPyContent.lastIndexOf("bot.run(TOKEN)");
-
-                        String newMainPyContent = mainPyContent.substring(0, lastIndexBotRun) + content + mainPyContent.substring(lastIndexBotRun);
-
-                        try {
-                            BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
-                            writer.write(newMainPyContent);
-                            writer.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        for(Tab commandsTab : commandsTabPane.getTabs().subList(0, commandsTabPane.getTabs().size() - 1)) {
-                            if(commandsTab.getTooltip().getText().equals(mainPyFile.getAbsolutePath())) {
-                                CodeArea mainPyCA = getCodeArea(commandsTab);
-                                mainPyCA.replaceText(newMainPyContent);
-                            }
-                        }
-                    }
+                    appendCommandText(content);
                 }
 
             }
         });
+    }
 
+    private void appendCommandText(String content) {
+        //Getting contents of tempMain.py
+        File tempPyFile = new File(BOT_FOLDER_PATH + "\\tempMain.py");
+        String tempMainContent =  getFileContents(tempPyFile);
+
+        String newMainPyContent;
+        if(tempMainContent.contains("bot.run(TOKEN)")) {
+            int lastIndexBotRun = tempMainContent.lastIndexOf("bot.run(TOKEN)");
+            newMainPyContent = tempMainContent.substring(0, lastIndexBotRun) + content + "\n\n" +tempMainContent.substring(lastIndexBotRun);
+        }
+        else {
+            newMainPyContent = tempMainContent + content + "\n\nbot.run(TOKEN)";
+        }
+
+        File mainPyFile = new File(BOT_FOLDER_PATH + "\\main.py");
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
+            writer.write(newMainPyContent);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(Tab commandsTab : commandsTabPane.getTabs().subList(0, commandsTabPane.getTabs().size() - 1)) {
+            if(commandsTab.getTooltip().getText().equals(mainPyFile.getAbsolutePath())) {
+                CodeArea mainPyCA = getCodeArea(commandsTab);
+                mainPyCA.replaceText(newMainPyContent);
+            }
+        }
     }
 
     private ButtonType confirmation(String content) {
@@ -386,8 +401,7 @@ public class ApplicationController implements Initializable {
         ButtonType buttonType = confirmation("Do you want to save this project before creating a new one?");
         if (buttonType.equals(ButtonType.YES)) save();
 
-        Main.getScene().getWindow().setHeight(480);
-        Main.getScene().getWindow().setWidth(640);
+        BOT_FOLDER_PATH = null;
         Main.changeScene("/View/getBotInfo.fxml");
     }
 
@@ -419,9 +433,7 @@ public class ApplicationController implements Initializable {
         ButtonType buttonType = confirmation("Do you want to save this project before closing?");
         if (buttonType.equals(ButtonType.YES)) save();
 
-        Main.getScene().getWindow().setHeight(480);
-        Main.getScene().getWindow().setWidth(640);
-        Main.getScene().getWindow().centerOnScreen();
+        BOT_FOLDER_PATH = null;
         Main.changeScene("/View/initialize.fxml");
     }
 

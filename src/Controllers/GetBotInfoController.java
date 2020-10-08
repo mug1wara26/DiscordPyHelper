@@ -157,10 +157,26 @@ public class GetBotInfoController implements Initializable {
         Runtime rt = Runtime.getRuntime();
         Process pr = rt.exec("python -m pip install -r \"" + requirementsFile.getAbsolutePath() + "\"");
 
+        //tempMain.py creation
+        File tempMainPy = new File(botFolderPath + "\\tempMain.py");
+
+        BufferedReader mainPyReader = new BufferedReader(new FileReader(mainPyFile));
+        BufferedWriter tempMainPyWriter = new BufferedWriter(new FileWriter(tempMainPy));
+
+        line = mainPyReader.readLine();
+        content = new StringBuilder();
+        while(line != null) {
+            content.append(line).append("\n");
+            line = mainPyReader.readLine();
+        }
+
+        tempMainPyWriter.write(content.toString());
+        tempMainPyWriter.close();
+        mainPyReader.close();
 
         //Switch to application.fxml
         if(error) {
-            if(safeDelete) botFolder.delete();
+            botFolder.delete();
         }
         else {
             Main.changeScene("/View/application.fxml");

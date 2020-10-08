@@ -77,7 +77,7 @@ public class Command {
     public String getCommandDef() {
         StringBuilder commandDef;
 
-        commandDef = new StringBuilder("@bot.command(\"" + description + "\")\n");
+        commandDef = new StringBuilder("@bot.command(\"" + name + "\")\n");
 
         if(checkAny) {
             commandDef.append("@commands.check_any(");
