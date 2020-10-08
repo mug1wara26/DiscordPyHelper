@@ -29,14 +29,6 @@
   -fx-text-fill: white;
 }
 
-.button {
-  -fx-border-radius: 3;
-  -fx-font-family: "Eras Medium ITC";
-  -fx-background-color: black;
-  -fx-border-color: white;
-  -fx-text-fill: white;
-}
-
 .radio-button {
   -fx-font-family: "Eras Medium ITC";
   -fx-text-fill: white;

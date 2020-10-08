@@ -14,12 +14,4 @@
   -fx-background-color: transparent;
 }
 
-.button {
-  -fx-border-radius: 3;
-  -fx-font-family: "Eras Medium ITC";
-  -fx-background-color: black;
-  -fx-border-color: white;
-  -fx-text-fill: white;
-}
-
 /*# sourceMappingURL=finishAddCommand.css.map */

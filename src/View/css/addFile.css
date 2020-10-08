@@ -3,14 +3,6 @@
   -fx-text-fill: white;
 }
 
-.button {
-  -fx-border-radius: 3;
-  -fx-font-family: "Eras Medium ITC";
-  -fx-background-color: black;
-  -fx-border-color: white;
-  -fx-text-fill: white;
-}
-
 .text-field {
   -fx-background-color: "5f5f5f";
   -fx-border-color: "5f5f5f";
