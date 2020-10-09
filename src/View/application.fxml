@@ -85,15 +85,23 @@
                            <children>
                               <Button mnemonicParsing="false" onAction="#handleCompileCommands" text="Compile commands">
                                  <VBox.margin>
-                                    <Insets left="10.0" />
+                                    <Insets />
                                  </VBox.margin>
                               </Button>
                               <Button fx:id="runBtn" mnemonicParsing="false" onAction="#handleRunBtn" prefHeight="25.0" prefWidth="124.0" text="Run Bot">
                                  <VBox.margin>
-                                    <Insets left="10.0" top="10.0" />
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </Button>
+                              <Button fx:id="stopBtn" mnemonicParsing="false" onAction="#handleStopBtn" prefHeight="24.0" prefWidth="124.0" text="Stop Bot">
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
                                  </VBox.margin>
                               </Button>
                            </children>
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
                         </VBox>
                         <TextArea fx:id="pythonConsoleTA" editable="false" prefHeight="100.0" prefWidth="1716.0">
                            <HBox.margin>

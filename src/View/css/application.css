@@ -76,7 +76,11 @@
 
 #runBtn {
   -fx-background-color: green;
-  -fx-text-fill: white;
+}
+
+#stopBtn {
+  -fx-background-color: red;
+  -fx-text-fill: black;
 }
 
 #pythonConsoleTA {

@@ -102,7 +102,7 @@ public class InitializeController implements Initializable {
         }
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Open");
-        if(lastFolderOpened != null) directoryChooser.setInitialDirectory(lastFolderOpened);
+        directoryChooser.setInitialDirectory(new File(prefs.get(INIT_PATH_KEY, null)));
 
         File selectedFolder = directoryChooser.showDialog(null);
         if(selectedFolder != null && prefs.get(INIT_PATH_KEY, null).equals(selectedFolder.getParentFile().getAbsolutePath())) {

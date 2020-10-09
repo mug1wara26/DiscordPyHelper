@@ -30,8 +30,11 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class ApplicationController implements Initializable {
     @FXML
@@ -41,13 +44,13 @@ public class ApplicationController implements Initializable {
     @FXML
     private Button addBtn;
     @FXML
-    private Tab mainPyTab;
-    @FXML
     private TreeView<String> fileTreeView;
     @FXML
     private TextArea pythonConsoleTA;
     @FXML
     private VBox runBtnVBox;
+    @FXML
+    private Tab mainPyTab;
 
 
     private static String BOT_FOLDER_PATH = null;
@@ -55,6 +58,9 @@ public class ApplicationController implements Initializable {
     private TreeItem<String> commandDir;
     private TreeItem<String> rootItem;
     private File lastFolderOpened = null;
+    Process mainPyProcess;
+    Thread mainPyThread;
+    boolean mainPyThreadInterrupt;
 
     public void setBOT_FOLDER_PATH(String BOT_FOLDER_PATH) {
         ApplicationController.BOT_FOLDER_PATH = BOT_FOLDER_PATH;
@@ -120,6 +126,12 @@ public class ApplicationController implements Initializable {
 
         runBtnVBox.setPrefWidth(Main.getStage().getWidth() * 0.15);
         pythonConsoleTA.setPrefWidth(Main.getStage().getWidth() * 0.85);
+
+        //Close python process on close
+        Main.getStage().setOnHiding( event -> {
+            System.out.println("Closing Stage");
+            if(mainPyProcess!=null) mainPyProcess.destroy();
+        } );
     }
 
     public void displayFileStructure(TreeItem<String> root, File file) {
@@ -168,7 +180,7 @@ public class ApplicationController implements Initializable {
             contextMenu.getItems().add(newFile);
 
             //Check is child file is the commands folder, if it is add a new command menu item
-            if(childFile.getAbsolutePath().equals(GetBotInfoController.getBotFolderPath() + "\\commands")) {
+            if(childFile.getAbsolutePath().equals(BOT_FOLDER_PATH + "\\commands")) {
                 commandDir = childItem;
                 MenuItem addCommand = new MenuItem("New Command");
 
@@ -292,7 +304,7 @@ public class ApplicationController implements Initializable {
     public void addCommand(Command command) throws IOException {
         String name = command.getName();
         String content = command.getCommandDef();
-        String commandPath = GetBotInfoController.getBotFolderPath() + "\\commands";
+        String commandPath = BOT_FOLDER_PATH + "\\commands";
 
         File file = new File(commandPath + "\\" + name + ".DPH");
         if(file.exists()) {
@@ -368,8 +380,18 @@ public class ApplicationController implements Initializable {
         File tempPyFile = new File(BOT_FOLDER_PATH + "\\tempMain.py");
         String tempMainContent =  getFileContents(tempPyFile);
 
+        File mainPyFile = new File(BOT_FOLDER_PATH + "\\main.py");
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
+            writer.write(tempMainContent);
+            writer.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
         String newMainPyContent;
         String content;
+
         for(File file : Objects.requireNonNull(new File(BOT_FOLDER_PATH + "\\commands").listFiles())) {
             if (file.getName().endsWith(".DPH")) {
                 content = getFileContents(file);
@@ -382,7 +404,7 @@ public class ApplicationController implements Initializable {
                 }
 
                 //Appending command to main.py
-                File mainPyFile = new File(BOT_FOLDER_PATH + "\\main.py");
+                mainPyFile = new File(BOT_FOLDER_PATH + "\\main.py");
                 try {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
                     writer.write(newMainPyContent);
@@ -390,6 +412,12 @@ public class ApplicationController implements Initializable {
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
+            }
+        }
+
+        for(Tab tab : commandsTabPane.getTabs().subList(0, commandsTabPane.getTabs().size() - 1)) {
+            if(tab.getTooltip().getText().equals(mainPyFile.getAbsolutePath())) {
+                getCodeArea(tab).replaceText(getFileContents(mainPyFile));
             }
         }
     }
@@ -463,12 +491,16 @@ public class ApplicationController implements Initializable {
 
     public BufferedReader getBufferedReader() {
         BufferedReader stdInput = null;
+        BufferedReader errInput = null;
         try {
-            Process pr = Runtime.getRuntime().exec("cmd /c cd \"" + BOT_FOLDER_PATH + "\"&& python -u main.py");
+            mainPyProcess =Runtime.getRuntime().exec("cmd /c cd \"" + BOT_FOLDER_PATH + "\"&& python -u main.py");
 
-            assert pr != null;
+
+            assert mainPyProcess != null;
             stdInput = new BufferedReader(new
-                    InputStreamReader(pr.getInputStream()));
+                    InputStreamReader(mainPyProcess.getInputStream()));
+
+
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -476,19 +508,24 @@ public class ApplicationController implements Initializable {
     }
 
     @FXML
-    public void handleRunBtn(ActionEvent e) {
+    public void handleRunBtn(ActionEvent e) throws InterruptedException {
+        mainPyThreadInterrupt = true;
+        TimeUnit.SECONDS.sleep((long) 0.5);
+        if(mainPyProcess != null) mainPyProcess.destroy();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-
                 Runnable runMainPy = new Runnable() {
                     @Override
                     public void run() {
+                        mainPyThreadInterrupt = false;
+                        pythonConsoleTA.setText("Running...\n");
                         BufferedReader stdInput = getBufferedReader();
 
                         try {
                             String s;
                             while ((s = stdInput.readLine()) != null) {
+                                if(mainPyThreadInterrupt) break;
                                 pythonConsoleTA.appendText(s);
                             }
                         } catch (IOException ex) {
@@ -497,11 +534,19 @@ public class ApplicationController implements Initializable {
                     }
                 };
 
-                Thread t = new Thread(runMainPy);
-                t.setDaemon(true);
-                t.start();
+                mainPyThread = new Thread(runMainPy);
+                mainPyThread.setDaemon(true);
+                mainPyThread.start();
             }
         });
+    }
+
+    @FXML
+    public void handleStopBtn(ActionEvent e) {
+        mainPyThreadInterrupt = true;
+        if(mainPyProcess!= null) mainPyProcess.destroy();
+
+        pythonConsoleTA.setText("Killed");
     }
 
     private void addFile(TreeItem<String> rootTreeItem, File file) throws IOException {
@@ -516,7 +561,9 @@ public class ApplicationController implements Initializable {
     }
 
     @FXML
-    public void handleMenuAbout(ActionEvent e) {
-
+    public void handleMenuAbout(ActionEvent e) throws URISyntaxException, IOException {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            Desktop.getDesktop().browse(new URI("https://docs.google.com/document/d/1WOsVUWmvsx5DR8ZQxnfkQSQ3YzzzCOYi5jR8rlR2pbg/edit?usp=sharing"));
+        }
     }
 }

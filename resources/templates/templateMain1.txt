@@ -3,14 +3,15 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 
+#NOTE: Do not add bot commands in tempMain.py!
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='%s')
-bot.remove_command("help")
 
 #Define variables and functions here
 
 @bot.event
 async def on_ready():
-    print("Connected to discord!")
+    print("Connected to discord!\n")
