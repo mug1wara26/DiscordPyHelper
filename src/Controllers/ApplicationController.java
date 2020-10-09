@@ -503,6 +503,7 @@ public class ApplicationController implements Initializable {
                 };
 
                 Thread t = new Thread(runMainPy);
+                t.setDaemon(true);
                 t.start();
             }
         });
