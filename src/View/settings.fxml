@@ -20,7 +20,7 @@
             <Label text="Set Default Path" />
             <HBox alignment="CENTER_LEFT" prefHeight="27.0" prefWidth="200.0">
                <children>
-                  <TextField fx:id="pathTF" editable="false" onKeyTyped="#pathTFOnKeyTyped" prefHeight="27.0" prefWidth="200.0" styleClass="inputTF" />
+                  <TextField fx:id="pathTF" editable="false" prefHeight="27.0" prefWidth="200.0" styleClass="inputTF" />
                   <Button mnemonicParsing="false" onAction="#handleBrowseBtn" prefHeight="27.0" prefWidth="70.0" text="Browse">
                      <HBox.margin>
                         <Insets left="10.0" />
