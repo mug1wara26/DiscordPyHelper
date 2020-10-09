@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -31,7 +32,6 @@ import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-import java.util.List;
 
 public class ApplicationController implements Initializable {
     @FXML
@@ -44,17 +44,21 @@ public class ApplicationController implements Initializable {
     private Tab mainPyTab;
     @FXML
     private TreeView<String> fileTreeView;
+    @FXML
+    private TextArea pythonConsoleTA;
+    @FXML
+    private VBox runBtnVBox;
 
 
     private static String BOT_FOLDER_PATH = null;
-    private static List<File> requiredFiles = new ArrayList<>();
+    private static ArrayList<File> requiredFiles = new ArrayList<>();
     private TreeItem<String> commandDir;
     private TreeItem<String> rootItem;
     private File lastFolderOpened = null;
 
     public void setBOT_FOLDER_PATH(String BOT_FOLDER_PATH) {
         ApplicationController.BOT_FOLDER_PATH = BOT_FOLDER_PATH;
-        requiredFiles = Arrays.asList(Objects.requireNonNull(new File(BOT_FOLDER_PATH).listFiles()));
+        requiredFiles.addAll(Arrays.asList(Objects.requireNonNull(new File(BOT_FOLDER_PATH).listFiles())));
     }
 
     @Override
@@ -113,6 +117,9 @@ public class ApplicationController implements Initializable {
         requiredFiles.add(new File(BOT_FOLDER_PATH + "\\commands"));
         requiredFiles.add(new File(BOT_FOLDER_PATH + "\\.env"));
         requiredFiles.add(new File(BOT_FOLDER_PATH + "\\requirements.txt"));
+
+        runBtnVBox.setPrefWidth(Main.getStage().getWidth() * 0.15);
+        pythonConsoleTA.setPrefWidth(Main.getStage().getWidth() * 0.85);
     }
 
     public void displayFileStructure(TreeItem<String> root, File file) {
@@ -343,21 +350,16 @@ public class ApplicationController implements Initializable {
     }
     //Method to save only 1 file
     private void save(Tab tab) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                File file = new File(tab.getTooltip().getText());
-                CodeArea codeArea = getCodeArea(tab);
+        File file = new File(tab.getTooltip().getText());
+        CodeArea codeArea = getCodeArea(tab);
 
-                try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                    writer.write(codeArea.getText());
-                    writer.close();
-                } catch (IOException e) {
-                    Main.alert(AlertType.ERROR, "Error in saving file :(");
-                }
-            }
-        });
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(codeArea.getText());
+            writer.close();
+        } catch (IOException e) {
+            Main.alert(AlertType.ERROR, "Error in saving file :(");
+        }
     }
 
     @FXML
@@ -455,7 +457,6 @@ public class ApplicationController implements Initializable {
         ButtonType buttonType = confirmation("Do you want to save this project before exiting?");
         if (buttonType.equals(ButtonType.YES)) save();
         Main.getStage().close();
-
     }
 
     @FXML
@@ -465,14 +466,46 @@ public class ApplicationController implements Initializable {
         clipboard.setContents(selection, selection);
     }
 
+    public BufferedReader getBufferedReader() {
+        BufferedReader stdInput = null;
+        try {
+            Process pr = Runtime.getRuntime().exec("cmd /c cd \"" + BOT_FOLDER_PATH + "\"&& python -u main.py");
+
+            assert pr != null;
+            stdInput = new BufferedReader(new
+                    InputStreamReader(pr.getInputStream()));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return stdInput;
+    }
+
     @FXML
     public void handleRunBtn(ActionEvent e) {
-        try {
-            Runtime.getRuntime().exec("cmd /c start cmd.exe /K \"cd " + BOT_FOLDER_PATH + "&& python main.py" + "\"");
-        }
-        catch (Exception err) {
-            err.printStackTrace();
-        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+                Runnable runMainPy = new Runnable() {
+                    @Override
+                    public void run() {
+                        BufferedReader stdInput = getBufferedReader();
+
+                        try {
+                            String s;
+                            while ((s = stdInput.readLine()) != null) {
+                                pythonConsoleTA.appendText(s);
+                            }
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                };
+
+                Thread t = new Thread(runMainPy);
+                t.start();
+            }
+        });
     }
 
     private void addFile(TreeItem<String> rootTreeItem, File file) throws IOException {

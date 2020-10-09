@@ -79,4 +79,21 @@
   -fx-text-fill: white;
 }
 
+#pythonConsoleTA {
+  -fx-background-color: black;
+  -fx-text-fill: white;
+}
+
+#pythonConsoleTA .scroll-pane {
+  -fx-background-color: transparent;
+}
+
+#pythonConsoleTA .scroll-pane .viewport {
+  -fx-background-color: transparent;
+}
+
+#pythonConsoleTA .scroll-pane .content {
+  -fx-background-color: transparent;
+}
+
 /*# sourceMappingURL=application.css.map */

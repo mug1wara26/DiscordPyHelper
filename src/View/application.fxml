@@ -10,10 +10,13 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ApplicationController">
    <children>
@@ -53,7 +56,7 @@
                   <Insets right="20.0" />
                </BorderPane.margin>
                <children>
-                  <SplitPane dividerPositions="0.10063224446786091" prefHeight="768.0" prefWidth="1900.0">
+                  <SplitPane dividerPositions="0.10063224446786091" prefHeight="700.0" prefWidth="1900.0">
                      <items>
                         <TreeView fx:id="fileTreeView" prefHeight="200.0" prefWidth="200.0" />
                         <TabPane fx:id="commandsTabPane" prefHeight="1055.0" prefWidth="1700.0" tabClosingPolicy="ALL_TABS">
@@ -78,15 +81,35 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </SplitPane>
-                  <Button mnemonicParsing="false" onAction="#handleCompileCommands" text="Compile commands">
+                  <HBox prefHeight="350.0" prefWidth="1900.0">
+                     <children>
+                        <VBox fx:id="runBtnVBox" prefHeight="100.0" prefWidth="134.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#handleCompileCommands" text="Compile commands">
+                                 <VBox.margin>
+                                    <Insets left="10.0" />
+                                 </VBox.margin>
+                              </Button>
+                              <Button fx:id="runBtn" mnemonicParsing="false" onAction="#handleRunBtn" prefHeight="25.0" prefWidth="124.0" text="Run Bot">
+                                 <VBox.margin>
+                                    <Insets left="10.0" top="10.0" />
+                                 </VBox.margin>
+                              </Button>
+                           </children>
+                        </VBox>
+                        <TextArea fx:id="pythonConsoleTA" editable="false" prefHeight="100.0" prefWidth="1716.0">
+                           <HBox.margin>
+                              <Insets left="25.0" />
+                           </HBox.margin>
+                           <font>
+                              <Font name="Consolas" size="12.0" />
+                           </font>
+                        </TextArea>
+                     </children>
                      <VBox.margin>
-                        <Insets left="10.0" />
+                        <Insets bottom="10.0" top="35.0" />
                      </VBox.margin>
-                  </Button>
-                  <Button fx:id="runBtn" mnemonicParsing="false" onAction="#handleRunBtn" prefHeight="25.0" prefWidth="124.0" text="Run Bot">
-                     <VBox.margin>
-                        <Insets left="10.0" top="10.0" />
-                     </VBox.margin></Button>
+                  </HBox>
                </children></VBox>
          </center>
       </BorderPane>
