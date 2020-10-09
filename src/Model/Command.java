@@ -121,7 +121,7 @@ public class Command extends abstractClass{
     }
 
     @Override
-    String getName() {
+    public String getName() {
         return name;
     }
 }

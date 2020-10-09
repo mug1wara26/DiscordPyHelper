@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import java.util.regex.Matcher;
@@ -42,11 +43,24 @@ public class SyntaxArea {
                     int caretPosition = codeArea.getCaretPosition();
                     int currentParagraph = codeArea.getCurrentParagraph();
                     Matcher m0 = whiteSpace.matcher(codeArea.getParagraph(currentParagraph - 1).getSegments().get(0));
-                    if (m0.find()) Platform.runLater(() -> codeArea.insertText(caretPosition, m0.group()));
+                    if (m0.find()) codeArea.insertText(caretPosition, m0.group());
 
                     try {
                         if (codeAreaText.substring(codeAreaText.length() - 2, codeAreaText.length() - 1).equals(":")) {
-                            codeArea.insertText(codeArea.getCaretPosition(), "    ");
+                            int codeAreaTextIndex = codeAreaText.length() - 3;
+                            while (codeAreaTextIndex != 0 && (codeAreaText.charAt(codeAreaTextIndex) + "").equals("\n")) {
+                                codeAreaTextIndex--;
+                            }
+
+                            codeAreaTextIndex += 1;
+                            System.out.println("A" +codeAreaTextIndex);
+                            StringBuilder indentLevel = new StringBuilder();
+                            while (("" + codeAreaText.charAt(codeAreaTextIndex)).equals(" ")) {
+                                indentLevel.append(" ");
+                                codeAreaTextIndex++;
+                            }
+
+                            codeArea.insertText(codeArea.getCaretPosition(), "    " + indentLevel.toString());
                         }
                     } catch (IndexOutOfBoundsException ignored) {
                     }
