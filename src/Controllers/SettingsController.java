@@ -26,12 +26,12 @@ public class SettingsController {
         File selectedFolder = directoryChooser.showDialog(null);
         if(selectedFolder != null) {
             pathTF.setText(selectedFolder.getAbsolutePath());
+            doneBtn.setDisable(false);
         }
-    }
-
-    public void pathTFOnKeyTyped(KeyEvent ke) {
-        if(pathTF.getText().isEmpty()) doneBtn.setDisable(true);
-        else doneBtn.setDisable(false);
+        else {
+            pathTF.setText("");
+            doneBtn.setDisable(true);
+        }
     }
 
     public void handleDoneBtn(ActionEvent e) {

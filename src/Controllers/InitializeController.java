@@ -2,8 +2,11 @@ package Controllers;
 
 import Model.Main;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,6 +16,7 @@ import javafx.scene.text.Font;
 
 import javafx.event.ActionEvent;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.URL;
@@ -30,6 +34,8 @@ public class InitializeController implements Initializable {
     private Button newBtn;
     @FXML
     private Button openBtn;
+    @FXML
+    private Button settingsBtn;
 
 
     private final Font TITLEFONT = Font.loadFont("file:resources/fonts/PatrickHand-Regular.ttf", 30);
@@ -51,6 +57,7 @@ public class InitializeController implements Initializable {
 
         interactiveBtn(newBtn);
         interactiveBtn(openBtn);
+        interactiveBtn(settingsBtn);
     }
 
     //Method to make buttons more interactive
@@ -105,5 +112,15 @@ public class InitializeController implements Initializable {
             Main.changeScene("/View/application.fxml");
         }
         else Main.alert(AlertType.ERROR, "Project must be in default directory!");
+    }
+
+    @FXML
+    public void handleSettingsBtn(ActionEvent e) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/View/settings.fxml"));
+
+        Stage stage = new Stage();
+        stage.setTitle("Settings");
+        stage.setScene(new Scene(root, 320, 240));
+        stage.showAndWait();
     }
 }
