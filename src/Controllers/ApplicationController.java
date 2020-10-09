@@ -208,14 +208,14 @@ public class ApplicationController implements Initializable {
             contextMenu.getItems().add(save);
         }
 
-        if(requiredFiles.contains(childFile)) {
+        if(!requiredFiles.contains(childFile)) {
             MenuItem delete = new MenuItem("Delete");
             delete.setOnAction(e -> {
-
                 Alert a = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this file?", ButtonType.YES, ButtonType.NO);
                 Optional<ButtonType> result = a.showAndWait();
                 if(result.get().equals(ButtonType.YES)) childFile.delete();
             });
+            contextMenu.getItems().add(delete);
         }
 
         childItem.getGraphic().setOnContextMenuRequested(e -> contextMenu.show(childItem.getGraphic(), e.getScreenX(), e.getScreenY()));
@@ -363,7 +363,7 @@ public class ApplicationController implements Initializable {
     }
 
     @FXML
-    private void handleCompileCommands(ActionEvent event) {
+    private void handleCompileCommands(ActionEvent e) {
         //Getting contents of tempMain.py
         File tempPyFile = new File(BOT_FOLDER_PATH + "\\tempMain.py");
         String tempMainContent =  getFileContents(tempPyFile);
@@ -387,8 +387,8 @@ public class ApplicationController implements Initializable {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(mainPyFile));
                     writer.write(newMainPyContent);
                     writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
             }
         }
@@ -440,11 +440,6 @@ public class ApplicationController implements Initializable {
 
         BOT_FOLDER_PATH = null;
         Main.changeScene("/View/initialize.fxml");
-    }
-
-
-    @FXML
-    public void handleMenuSettings(ActionEvent e) {
     }
 
     @FXML
@@ -518,5 +513,10 @@ public class ApplicationController implements Initializable {
         stage.setTitle("Create File");
         stage.setScene(new Scene(root, 320, 240));
         stage.showAndWait();
+    }
+
+    @FXML
+    public void handleMenuAbout(ActionEvent e) {
+
     }
 }

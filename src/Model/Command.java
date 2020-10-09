@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Command {
-    private String name;
+public class Command extends abstractClass{
     private String description;
     private ArrayList<Check> checks;
     private ArrayList<String> args;
@@ -19,7 +18,7 @@ public class Command {
     private boolean keywordArg;
 
     public Command(String name, String description) {
-        this.name = name;
+        super(name);
         this.description = description;
         args = new ArrayList<>();
         converters = new ArrayList<>();
@@ -121,7 +120,8 @@ public class Command {
         return commandDef.toString();
     }
 
-    public String getName() {
+    @Override
+    String getName() {
         return name;
     }
 }

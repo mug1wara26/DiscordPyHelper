@@ -2,20 +2,19 @@ package Model;
 
 import java.util.ArrayList;
 
-public class Check {
-    private String name;
+public class Check extends abstractClass {
     private ArrayList<String> params = new ArrayList<>();
     private boolean hasParams;
     String type;
 
     public Check(String name, ArrayList<String> params) {
-        this.name = name;
+        super(name);
         this.params = params;
         hasParams = true;
     }
 
     public Check(String name, String type) {
-        this.name = name;
+        super(name);
         this.type = type;
         hasParams = false;
     }
@@ -45,5 +44,10 @@ public class Check {
         returnString.append(")");
 
         return returnString.toString();
+    }
+
+    @Override
+    String getName() {
+        return null;
     }
 }
