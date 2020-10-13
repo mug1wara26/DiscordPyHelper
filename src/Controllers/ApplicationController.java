@@ -561,6 +561,10 @@ public class ApplicationController implements Initializable {
                 mainPyThread = new Thread(runMainPy);
                 mainPyThread.setDaemon(true);
                 mainPyThread.start();
+                
+                mainPyErrorThread = new Thread(mainPyError);
+                mainPyErrorThread.setDaemon(true);
+                mainPyErrorThread.start();
             }
         });
     }
