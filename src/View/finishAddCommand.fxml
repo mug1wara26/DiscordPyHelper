@@ -30,8 +30,8 @@
                   <Insets top="5.0" />
                </VBox.margin>
             </ScrollPane>
-            <Label text="Change the position of parameters" />
-            <HBox prefHeight="26.0" prefWidth="200.0">
+            <Label fx:id="changePosLbl" text="Change the position of parameters" />
+            <HBox fx:id="changePosHBox" prefHeight="26.0" prefWidth="200.0">
                <children>
                   <ComboBox fx:id="paramsCB" prefHeight="25.0" prefWidth="150.0" />
                   <Spinner fx:id="paramPosSpinner" editable="true" prefHeight="26.0" prefWidth="97.0">

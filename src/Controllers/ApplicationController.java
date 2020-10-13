@@ -60,7 +60,9 @@ public class ApplicationController implements Initializable {
     private File lastFolderOpened = null;
     Process mainPyProcess;
     Thread mainPyThread;
+    Thread mainPyErrorThread;
     boolean mainPyThreadInterrupt;
+    boolean mainPyErrorThreadInterrupt;
 
     public void setBOT_FOLDER_PATH(String BOT_FOLDER_PATH) {
         ApplicationController.BOT_FOLDER_PATH = BOT_FOLDER_PATH;
@@ -129,7 +131,8 @@ public class ApplicationController implements Initializable {
 
         //Close python process on close
         Main.getStage().setOnHiding( event -> {
-            System.out.println("Closing Stage");
+            mainPyThreadInterrupt = true;
+            mainPyErrorThreadInterrupt = true;
             if(mainPyProcess!=null) mainPyProcess.destroy();
         } );
     }
@@ -391,16 +394,18 @@ public class ApplicationController implements Initializable {
 
         String newMainPyContent;
         String content;
+        String mainPyContent;
 
         for(File file : Objects.requireNonNull(new File(BOT_FOLDER_PATH + "\\commands").listFiles())) {
             if (file.getName().endsWith(".DPH")) {
                 content = getFileContents(file);
+                mainPyContent = getFileContents(mainPyFile);
                 //Adding command to newMainPyContent
                 if (tempMainContent.contains("bot.run(TOKEN)")) {
-                    int lastIndexBotRun = tempMainContent.lastIndexOf("bot.run(TOKEN)");
-                    newMainPyContent = tempMainContent.substring(0, lastIndexBotRun) + content + "\n\n" + tempMainContent.substring(lastIndexBotRun);
+                    int lastIndexBotRun = mainPyContent.lastIndexOf("bot.run(TOKEN)");
+                    newMainPyContent = mainPyContent.substring(0, lastIndexBotRun) + content + "\n\n" + mainPyContent.substring(lastIndexBotRun);
                 } else {
-                    newMainPyContent = tempMainContent + content + "\n\nbot.run(TOKEN)";
+                    newMainPyContent = mainPyContent + content + "\n\nbot.run(TOKEN)";
                 }
 
                 //Appending command to main.py
@@ -534,6 +539,25 @@ public class ApplicationController implements Initializable {
                     }
                 };
 
+                Runnable mainPyError = new Runnable() {
+                    @Override
+                    public void run() {
+                        mainPyErrorThreadInterrupt = false;
+
+                        BufferedReader errInput = new BufferedReader(new InputStreamReader(mainPyProcess.getErrorStream()));
+
+                        try {
+                            String s;
+                            while ((s = errInput.readLine()) != null) {
+                                if(mainPyErrorThreadInterrupt) break;
+                                pythonConsoleTA.appendText(s);
+                            }
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                };
+
                 mainPyThread = new Thread(runMainPy);
                 mainPyThread.setDaemon(true);
                 mainPyThread.start();
@@ -544,7 +568,9 @@ public class ApplicationController implements Initializable {
     @FXML
     public void handleStopBtn(ActionEvent e) {
         mainPyThreadInterrupt = true;
+        mainPyErrorThreadInterrupt = true;
         if(mainPyProcess!= null) mainPyProcess.destroy();
+
 
         pythonConsoleTA.setText("Killed");
     }

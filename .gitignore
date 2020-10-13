@@ -72,6 +72,7 @@ fabric.properties
 
 #Local folder
 Test
+resources/python stuff.txt
 
 #scss files
 *.scss

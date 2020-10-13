@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -25,6 +26,10 @@ public class FinishAddCommandController implements Initializable {
     private Spinner<Integer> paramPosSpinner;
     @FXML
     private Button finishBtn;
+    @FXML
+    private HBox changePosHBox;
+    @FXML
+    private Label changePosLbl;
 
     private static Command command;
     private ArrayList<String> params;
@@ -42,7 +47,17 @@ public class FinishAddCommandController implements Initializable {
             paramsCB.getItems().add(param);
         }
 
-        SpinnerValueFactory<Integer> svf = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, params.size());
+        SpinnerValueFactory<Integer> svf;
+        if(params.size() != 0) {
+            svf = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, params.size());
+        }
+        else {
+            svf = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 1);
+            changePosHBox.setDisable(true);
+            changePosHBox.setVisible(false);
+            changePosLbl.setDisable(true);
+            changePosLbl.setVisible(false);
+        }
         paramPosSpinner.setValueFactory(svf);
     }
 
