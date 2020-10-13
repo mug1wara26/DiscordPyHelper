@@ -9,7 +9,6 @@ You can view the list of features that has to be implemented [here](https://docs
 * Sets up the discord.py bot, user only needs to write code for the bot commands itself
 * Stores bot token in .env
 * Handles async so beginners do not have to
-* Adds any packages needed in requirements.txt
 * Links to documentation of latest discord.py version
 * Creates a documentation of your bot in a .html file
 
